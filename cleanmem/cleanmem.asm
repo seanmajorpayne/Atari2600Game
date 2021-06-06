@@ -1,4 +1,3 @@
-
     processor 6502
 
     seg code
@@ -22,6 +21,8 @@ MemLoop:
     sta $0,X        ; Store value of A inside memory address $0 + X
     dex
     bne MemLoop
+
+    sta $0, X       ; Making sure the $00 address is also cleared
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Fill the ROM size to exactly 4kb
