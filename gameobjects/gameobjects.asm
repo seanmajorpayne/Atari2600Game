@@ -3,6 +3,16 @@
     include "vcs.h"
     include "macro.h"
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Start uninitialized segment at $80 
+; for variable declaration
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+    seg.u Variables
+    org $80
+P0Height ds 1           ; one byte for p0 height
+P1Height ds 1           ; one byte for p1 height
+
     seg code
     org $F000
 
@@ -24,6 +34,10 @@ Start:
 
     ldx #$CC
     stx COLUP1
+
+    ldx #10
+    stx P0Height
+    stx P1Height
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Start a new frame by turning on VBLANK and VSYNC
@@ -97,7 +111,7 @@ PlayerLoop:
     sta GRP0
     sta WSYNC
     iny
-    cpy #10
+    cpy P0Height
     bne PlayerLoop
 
     lda #0
@@ -114,7 +128,7 @@ PlayerTwoLoop:
     sta GRP1
     sta WSYNC
     iny
-    cpy #10
+    cpy P1Height
     bne PlayerTwoLoop
 
     lda #0

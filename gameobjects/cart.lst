@@ -371,10 +371,20 @@
     163  0000 ????						; EOF
 ------- FILE gameobjects.asm
       5  0000 ????
-      6  10000 ????				       seg	code
-      7  f000					      org	$F000
-      8  f000
-      9  f000				   Start
+      6  0000 ????						;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      7  0000 ????						; Start uninitialized segment at $80
+      8  0000 ????						; for variable declaration
+      9  0000 ????						;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     10  0000 ????
+     11 U0082 ????				      seg.u	Variables
+     12 U0080					      org	$80
+     13 U0080		       00	   P0Height   ds	1	; one byte for p0 height
+     14 U0081		       00	   P1Height   ds	1	; one byte for p1 height
+     15 U0082
+     16  10000 ????				       seg	code
+     17  f000					      org	$F000
+     18  f000
+     19  f000				   Start
       0  f000					      CLEAN_START
       1  f000		       78		      sei
       2  f001		       d8		      cld
@@ -387,631 +397,635 @@
       9  f008		       48		      pha
      10  f009		       d0 fb		      bne	.CLEAR_STACK
      11  f00b
-     11  f00b
-     12  f00b							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     13  f00b							; Set Game Colors
-     14  f00b							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     15  f00b
-     16  f00b		       a2 70		      ldx	#$70
-     17  f00d		       86 09		      stx	COLUBK
-     18  f00f
-     19  f00f		       a2 0f		      ldx	#%1111
-     20  f011		       86 08		      stx	COLUPF
-     21  f013
-     22  f013		       a2 6e		      ldx	#$6E
-     23  f015		       86 06		      stx	COLUP0
-     24  f017
-     25  f017		       a2 cc		      ldx	#$CC
-     26  f019		       86 07		      stx	COLUP1
-     27  f01b
-     28  f01b							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     29  f01b							; Start a new frame by turning on VBLANK and VSYNC
-     30  f01b							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     31  f01b
-     32  f01b				   NextFrame
-     33  f01b		       a9 02		      lda	#2
-     34  f01d		       85 00		      sta	VSYNC
-     35  f01f		       85 01		      sta	VBLANK
-     36  f021
-     37  f021							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     38  f021							; Generate the three lines of VSYNC
-     39  f021							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     40  f021
-     41  f021					      REPEAT	3
-     42  f021		       85 02		      sta	WSYNC
-     41  f021					      REPEND
-     42  f023		       85 02		      sta	WSYNC
-     41  f023					      REPEND
-     42  f025		       85 02		      sta	WSYNC
-     43  f027					      REPEND
-     44  f027
-     45  f027		       a9 00		      lda	#0
-     46  f029		       85 00		      sta	VSYNC
-     47  f02b
-     48  f02b							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     49  f02b							; Let TIA output 37 lines of VBLANK
-     50  f02b							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     51  f02b
-     52  f02b					      REPEAT	37
-     53  f02b		       85 02		      sta	WSYNC
-     52  f02b					      REPEND
-     53  f02d		       85 02		      sta	WSYNC
-     52  f02d					      REPEND
-     53  f02f		       85 02		      sta	WSYNC
-     52  f02f					      REPEND
-     53  f031		       85 02		      sta	WSYNC
-     52  f031					      REPEND
-     53  f033		       85 02		      sta	WSYNC
-     52  f033					      REPEND
-     53  f035		       85 02		      sta	WSYNC
-     52  f035					      REPEND
-     53  f037		       85 02		      sta	WSYNC
-     52  f037					      REPEND
-     53  f039		       85 02		      sta	WSYNC
-     52  f039					      REPEND
-     53  f03b		       85 02		      sta	WSYNC
-     52  f03b					      REPEND
-     53  f03d		       85 02		      sta	WSYNC
-     52  f03d					      REPEND
-     53  f03f		       85 02		      sta	WSYNC
-     52  f03f					      REPEND
-     53  f041		       85 02		      sta	WSYNC
-     52  f041					      REPEND
-     53  f043		       85 02		      sta	WSYNC
-     52  f043					      REPEND
-     53  f045		       85 02		      sta	WSYNC
-     52  f045					      REPEND
-     53  f047		       85 02		      sta	WSYNC
-     52  f047					      REPEND
-     53  f049		       85 02		      sta	WSYNC
-     52  f049					      REPEND
-     53  f04b		       85 02		      sta	WSYNC
-     52  f04b					      REPEND
-     53  f04d		       85 02		      sta	WSYNC
-     52  f04d					      REPEND
-     53  f04f		       85 02		      sta	WSYNC
-     52  f04f					      REPEND
-     53  f051		       85 02		      sta	WSYNC
-     52  f051					      REPEND
-     53  f053		       85 02		      sta	WSYNC
-     52  f053					      REPEND
-     53  f055		       85 02		      sta	WSYNC
-     52  f055					      REPEND
-     53  f057		       85 02		      sta	WSYNC
-     52  f057					      REPEND
-     53  f059		       85 02		      sta	WSYNC
-     52  f059					      REPEND
-     53  f05b		       85 02		      sta	WSYNC
-     52  f05b					      REPEND
-     53  f05d		       85 02		      sta	WSYNC
-     52  f05d					      REPEND
-     53  f05f		       85 02		      sta	WSYNC
-     52  f05f					      REPEND
-     53  f061		       85 02		      sta	WSYNC
-     52  f061					      REPEND
-     53  f063		       85 02		      sta	WSYNC
-     52  f063					      REPEND
-     53  f065		       85 02		      sta	WSYNC
-     52  f065					      REPEND
-     53  f067		       85 02		      sta	WSYNC
-     52  f067					      REPEND
-     53  f069		       85 02		      sta	WSYNC
-     52  f069					      REPEND
-     53  f06b		       85 02		      sta	WSYNC
-     52  f06b					      REPEND
-     53  f06d		       85 02		      sta	WSYNC
-     52  f06d					      REPEND
-     53  f06f		       85 02		      sta	WSYNC
-     52  f06f					      REPEND
-     53  f071		       85 02		      sta	WSYNC
-     52  f071					      REPEND
-     53  f073		       85 02		      sta	WSYNC
-     54  f075					      REPEND
-     55  f075
-     56  f075		       a9 00		      lda	#0
-     57  f077		       85 01		      sta	VBLANK
-     58  f079
-     59  f079							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     60  f079							; Draw 192 visible scanlines
-     61  f079							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     62  f079
-     63  f079					      REPEAT	10
-     64  f079		       85 02		      sta	WSYNC
-     63  f079					      REPEND
-     64  f07b		       85 02		      sta	WSYNC
-     63  f07b					      REPEND
-     64  f07d		       85 02		      sta	WSYNC
-     63  f07d					      REPEND
-     64  f07f		       85 02		      sta	WSYNC
-     63  f07f					      REPEND
-     64  f081		       85 02		      sta	WSYNC
-     63  f081					      REPEND
-     64  f083		       85 02		      sta	WSYNC
-     63  f083					      REPEND
-     64  f085		       85 02		      sta	WSYNC
-     63  f085					      REPEND
-     64  f087		       85 02		      sta	WSYNC
-     63  f087					      REPEND
-     64  f089		       85 02		      sta	WSYNC
-     63  f089					      REPEND
-     64  f08b		       85 02		      sta	WSYNC
-     65  f08d					      REPEND
-     66  f08d
-     67  f08d							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     68  f08d							; Draw Scoreboard
-     69  f08d							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     70  f08d
-     71  f08d		       a0 00		      ldy	#0
-     72  f08f				   ScoreboardLoop
-     73  f08f		       b9 f2 ff 	      lda	NumberBitmap,Y
-     74  f092		       85 0e		      sta	PF1
-     75  f094		       85 02		      sta	WSYNC
-     76  f096		       c8		      iny
-     77  f097		       c0 0a		      cpy	#10
-     78  f099		       d0 f4		      bne	ScoreboardLoop
-     79  f09b
-     80  f09b							; Disable playfield
-     81  f09b		       a9 00		      lda	#0
-     82  f09d		       85 0e		      sta	PF1
-     83  f09f
-     84  f09f							; Draw 50 empty scanlines
-     85  f09f					      REPEAT	50
-     86  f09f		       85 02		      sta	WSYNC
-     85  f09f					      REPEND
-     86  f0a1		       85 02		      sta	WSYNC
-     85  f0a1					      REPEND
-     86  f0a3		       85 02		      sta	WSYNC
-     85  f0a3					      REPEND
-     86  f0a5		       85 02		      sta	WSYNC
-     85  f0a5					      REPEND
-     86  f0a7		       85 02		      sta	WSYNC
-     85  f0a7					      REPEND
-     86  f0a9		       85 02		      sta	WSYNC
-     85  f0a9					      REPEND
-     86  f0ab		       85 02		      sta	WSYNC
-     85  f0ab					      REPEND
-     86  f0ad		       85 02		      sta	WSYNC
-     85  f0ad					      REPEND
-     86  f0af		       85 02		      sta	WSYNC
-     85  f0af					      REPEND
-     86  f0b1		       85 02		      sta	WSYNC
-     85  f0b1					      REPEND
-     86  f0b3		       85 02		      sta	WSYNC
-     85  f0b3					      REPEND
-     86  f0b5		       85 02		      sta	WSYNC
-     85  f0b5					      REPEND
-     86  f0b7		       85 02		      sta	WSYNC
-     85  f0b7					      REPEND
-     86  f0b9		       85 02		      sta	WSYNC
-     85  f0b9					      REPEND
-     86  f0bb		       85 02		      sta	WSYNC
-     85  f0bb					      REPEND
-     86  f0bd		       85 02		      sta	WSYNC
-     85  f0bd					      REPEND
-     86  f0bf		       85 02		      sta	WSYNC
-     85  f0bf					      REPEND
-     86  f0c1		       85 02		      sta	WSYNC
-     85  f0c1					      REPEND
-     86  f0c3		       85 02		      sta	WSYNC
-     85  f0c3					      REPEND
-     86  f0c5		       85 02		      sta	WSYNC
-     85  f0c5					      REPEND
-     86  f0c7		       85 02		      sta	WSYNC
-     85  f0c7					      REPEND
-     86  f0c9		       85 02		      sta	WSYNC
-     85  f0c9					      REPEND
-     86  f0cb		       85 02		      sta	WSYNC
-     85  f0cb					      REPEND
-     86  f0cd		       85 02		      sta	WSYNC
-     85  f0cd					      REPEND
-     86  f0cf		       85 02		      sta	WSYNC
-     85  f0cf					      REPEND
-     86  f0d1		       85 02		      sta	WSYNC
-     85  f0d1					      REPEND
-     86  f0d3		       85 02		      sta	WSYNC
-     85  f0d3					      REPEND
-     86  f0d5		       85 02		      sta	WSYNC
-     85  f0d5					      REPEND
-     86  f0d7		       85 02		      sta	WSYNC
-     85  f0d7					      REPEND
-     86  f0d9		       85 02		      sta	WSYNC
-     85  f0d9					      REPEND
-     86  f0db		       85 02		      sta	WSYNC
-     85  f0db					      REPEND
-     86  f0dd		       85 02		      sta	WSYNC
-     85  f0dd					      REPEND
-     86  f0df		       85 02		      sta	WSYNC
-     85  f0df					      REPEND
-     86  f0e1		       85 02		      sta	WSYNC
-     85  f0e1					      REPEND
-     86  f0e3		       85 02		      sta	WSYNC
-     85  f0e3					      REPEND
-     86  f0e5		       85 02		      sta	WSYNC
-     85  f0e5					      REPEND
-     86  f0e7		       85 02		      sta	WSYNC
-     85  f0e7					      REPEND
-     86  f0e9		       85 02		      sta	WSYNC
-     85  f0e9					      REPEND
-     86  f0eb		       85 02		      sta	WSYNC
-     85  f0eb					      REPEND
-     86  f0ed		       85 02		      sta	WSYNC
-     85  f0ed					      REPEND
-     86  f0ef		       85 02		      sta	WSYNC
-     85  f0ef					      REPEND
-     86  f0f1		       85 02		      sta	WSYNC
-     85  f0f1					      REPEND
-     86  f0f3		       85 02		      sta	WSYNC
-     85  f0f3					      REPEND
-     86  f0f5		       85 02		      sta	WSYNC
-     85  f0f5					      REPEND
-     86  f0f7		       85 02		      sta	WSYNC
-     85  f0f7					      REPEND
-     86  f0f9		       85 02		      sta	WSYNC
-     85  f0f9					      REPEND
-     86  f0fb		       85 02		      sta	WSYNC
-     85  f0fb					      REPEND
-     86  f0fd		       85 02		      sta	WSYNC
-     85  f0fd					      REPEND
-     86  f0ff		       85 02		      sta	WSYNC
-     85  f0ff					      REPEND
-     86  f101		       85 02		      sta	WSYNC
-     87  f103					      REPEND
-     88  f103
-     89  f103							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     90  f103							; Displays 10 scanlines for player one
-     91  f103							; Pulls data from an array of bytes defined at PlayerBitmap
-     92  f103							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     93  f103
-     94  f103		       a0 00		      ldy	#0
-     95  f105				   PlayerLoop
-     96  f105		       b9 e8 ff 	      lda	PlayerBitmap,Y
-     97  f108		       85 1b		      sta	GRP0
-     98  f10a		       85 02		      sta	WSYNC
-     99  f10c		       c8		      iny
-    100  f10d		       c0 0a		      cpy	#10
-    101  f10f		       d0 f4		      bne	PlayerLoop
-    102  f111
-    103  f111		       a9 00		      lda	#0
-    104  f113		       85 1b		      sta	GRP0
-    105  f115
-    106  f115							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    107  f115							; Displays 10 scanlines for player two
-    108  f115							; Pulls data from an array of bytes defined at PlayerBitmap
-    109  f115							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    110  f115
-    111  f115		       a0 00		      ldy	#0
-    112  f117				   PlayerTwoLoop
-    113  f117		       b9 e8 ff 	      lda	PlayerBitmap,Y
-    114  f11a		       85 1c		      sta	GRP1
-    115  f11c		       85 02		      sta	WSYNC
-    116  f11e		       c8		      iny
-    117  f11f		       c0 0a		      cpy	#10
-    118  f121		       d0 f4		      bne	PlayerTwoLoop
-    119  f123
-    120  f123		       a9 00		      lda	#0
-    121  f125		       85 1c		      sta	GRP1
-    122  f127
-    123  f127							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    124  f127							; Draw remaining 102 scanlines
-    125  f127							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    126  f127
-    127  f127					      REPEAT	102
-    128  f127		       85 02		      sta	WSYNC
-    127  f127					      REPEND
-    128  f129		       85 02		      sta	WSYNC
-    127  f129					      REPEND
-    128  f12b		       85 02		      sta	WSYNC
-    127  f12b					      REPEND
-    128  f12d		       85 02		      sta	WSYNC
-    127  f12d					      REPEND
-    128  f12f		       85 02		      sta	WSYNC
-    127  f12f					      REPEND
-    128  f131		       85 02		      sta	WSYNC
-    127  f131					      REPEND
-    128  f133		       85 02		      sta	WSYNC
-    127  f133					      REPEND
-    128  f135		       85 02		      sta	WSYNC
-    127  f135					      REPEND
-    128  f137		       85 02		      sta	WSYNC
-    127  f137					      REPEND
-    128  f139		       85 02		      sta	WSYNC
-    127  f139					      REPEND
-    128  f13b		       85 02		      sta	WSYNC
-    127  f13b					      REPEND
-    128  f13d		       85 02		      sta	WSYNC
-    127  f13d					      REPEND
-    128  f13f		       85 02		      sta	WSYNC
-    127  f13f					      REPEND
-    128  f141		       85 02		      sta	WSYNC
-    127  f141					      REPEND
-    128  f143		       85 02		      sta	WSYNC
-    127  f143					      REPEND
-    128  f145		       85 02		      sta	WSYNC
-    127  f145					      REPEND
-    128  f147		       85 02		      sta	WSYNC
-    127  f147					      REPEND
-    128  f149		       85 02		      sta	WSYNC
-    127  f149					      REPEND
-    128  f14b		       85 02		      sta	WSYNC
-    127  f14b					      REPEND
-    128  f14d		       85 02		      sta	WSYNC
-    127  f14d					      REPEND
-    128  f14f		       85 02		      sta	WSYNC
-    127  f14f					      REPEND
-    128  f151		       85 02		      sta	WSYNC
-    127  f151					      REPEND
-    128  f153		       85 02		      sta	WSYNC
-    127  f153					      REPEND
-    128  f155		       85 02		      sta	WSYNC
-    127  f155					      REPEND
-    128  f157		       85 02		      sta	WSYNC
-    127  f157					      REPEND
-    128  f159		       85 02		      sta	WSYNC
-    127  f159					      REPEND
-    128  f15b		       85 02		      sta	WSYNC
-    127  f15b					      REPEND
-    128  f15d		       85 02		      sta	WSYNC
-    127  f15d					      REPEND
-    128  f15f		       85 02		      sta	WSYNC
-    127  f15f					      REPEND
-    128  f161		       85 02		      sta	WSYNC
-    127  f161					      REPEND
-    128  f163		       85 02		      sta	WSYNC
-    127  f163					      REPEND
-    128  f165		       85 02		      sta	WSYNC
-    127  f165					      REPEND
-    128  f167		       85 02		      sta	WSYNC
-    127  f167					      REPEND
-    128  f169		       85 02		      sta	WSYNC
-    127  f169					      REPEND
-    128  f16b		       85 02		      sta	WSYNC
-    127  f16b					      REPEND
-    128  f16d		       85 02		      sta	WSYNC
-    127  f16d					      REPEND
-    128  f16f		       85 02		      sta	WSYNC
-    127  f16f					      REPEND
-    128  f171		       85 02		      sta	WSYNC
-    127  f171					      REPEND
-    128  f173		       85 02		      sta	WSYNC
-    127  f173					      REPEND
-    128  f175		       85 02		      sta	WSYNC
-    127  f175					      REPEND
-    128  f177		       85 02		      sta	WSYNC
-    127  f177					      REPEND
-    128  f179		       85 02		      sta	WSYNC
-    127  f179					      REPEND
-    128  f17b		       85 02		      sta	WSYNC
-    127  f17b					      REPEND
-    128  f17d		       85 02		      sta	WSYNC
-    127  f17d					      REPEND
-    128  f17f		       85 02		      sta	WSYNC
-    127  f17f					      REPEND
-    128  f181		       85 02		      sta	WSYNC
-    127  f181					      REPEND
-    128  f183		       85 02		      sta	WSYNC
-    127  f183					      REPEND
-    128  f185		       85 02		      sta	WSYNC
-    127  f185					      REPEND
-    128  f187		       85 02		      sta	WSYNC
-    127  f187					      REPEND
-    128  f189		       85 02		      sta	WSYNC
-    127  f189					      REPEND
-    128  f18b		       85 02		      sta	WSYNC
-    127  f18b					      REPEND
-    128  f18d		       85 02		      sta	WSYNC
-    127  f18d					      REPEND
-    128  f18f		       85 02		      sta	WSYNC
-    127  f18f					      REPEND
-    128  f191		       85 02		      sta	WSYNC
-    127  f191					      REPEND
-    128  f193		       85 02		      sta	WSYNC
-    127  f193					      REPEND
-    128  f195		       85 02		      sta	WSYNC
-    127  f195					      REPEND
-    128  f197		       85 02		      sta	WSYNC
-    127  f197					      REPEND
-    128  f199		       85 02		      sta	WSYNC
-    127  f199					      REPEND
-    128  f19b		       85 02		      sta	WSYNC
-    127  f19b					      REPEND
-    128  f19d		       85 02		      sta	WSYNC
-    127  f19d					      REPEND
-    128  f19f		       85 02		      sta	WSYNC
-    127  f19f					      REPEND
-    128  f1a1		       85 02		      sta	WSYNC
-    127  f1a1					      REPEND
-    128  f1a3		       85 02		      sta	WSYNC
-    127  f1a3					      REPEND
-    128  f1a5		       85 02		      sta	WSYNC
-    127  f1a5					      REPEND
-    128  f1a7		       85 02		      sta	WSYNC
-    127  f1a7					      REPEND
-    128  f1a9		       85 02		      sta	WSYNC
-    127  f1a9					      REPEND
-    128  f1ab		       85 02		      sta	WSYNC
-    127  f1ab					      REPEND
-    128  f1ad		       85 02		      sta	WSYNC
-    127  f1ad					      REPEND
-    128  f1af		       85 02		      sta	WSYNC
-    127  f1af					      REPEND
-    128  f1b1		       85 02		      sta	WSYNC
-    127  f1b1					      REPEND
-    128  f1b3		       85 02		      sta	WSYNC
-    127  f1b3					      REPEND
-    128  f1b5		       85 02		      sta	WSYNC
-    127  f1b5					      REPEND
-    128  f1b7		       85 02		      sta	WSYNC
-    127  f1b7					      REPEND
-    128  f1b9		       85 02		      sta	WSYNC
-    127  f1b9					      REPEND
-    128  f1bb		       85 02		      sta	WSYNC
-    127  f1bb					      REPEND
-    128  f1bd		       85 02		      sta	WSYNC
-    127  f1bd					      REPEND
-    128  f1bf		       85 02		      sta	WSYNC
-    127  f1bf					      REPEND
-    128  f1c1		       85 02		      sta	WSYNC
-    127  f1c1					      REPEND
-    128  f1c3		       85 02		      sta	WSYNC
-    127  f1c3					      REPEND
-    128  f1c5		       85 02		      sta	WSYNC
-    127  f1c5					      REPEND
-    128  f1c7		       85 02		      sta	WSYNC
-    127  f1c7					      REPEND
-    128  f1c9		       85 02		      sta	WSYNC
-    127  f1c9					      REPEND
-    128  f1cb		       85 02		      sta	WSYNC
-    127  f1cb					      REPEND
-    128  f1cd		       85 02		      sta	WSYNC
-    127  f1cd					      REPEND
-    128  f1cf		       85 02		      sta	WSYNC
-    127  f1cf					      REPEND
-    128  f1d1		       85 02		      sta	WSYNC
-    127  f1d1					      REPEND
-    128  f1d3		       85 02		      sta	WSYNC
-    127  f1d3					      REPEND
-    128  f1d5		       85 02		      sta	WSYNC
-    127  f1d5					      REPEND
-    128  f1d7		       85 02		      sta	WSYNC
-    127  f1d7					      REPEND
-    128  f1d9		       85 02		      sta	WSYNC
-    127  f1d9					      REPEND
-    128  f1db		       85 02		      sta	WSYNC
-    127  f1db					      REPEND
-    128  f1dd		       85 02		      sta	WSYNC
-    127  f1dd					      REPEND
-    128  f1df		       85 02		      sta	WSYNC
-    127  f1df					      REPEND
-    128  f1e1		       85 02		      sta	WSYNC
-    127  f1e1					      REPEND
-    128  f1e3		       85 02		      sta	WSYNC
-    127  f1e3					      REPEND
-    128  f1e5		       85 02		      sta	WSYNC
-    127  f1e5					      REPEND
-    128  f1e7		       85 02		      sta	WSYNC
-    127  f1e7					      REPEND
-    128  f1e9		       85 02		      sta	WSYNC
-    127  f1e9					      REPEND
-    128  f1eb		       85 02		      sta	WSYNC
-    127  f1eb					      REPEND
-    128  f1ed		       85 02		      sta	WSYNC
-    127  f1ed					      REPEND
-    128  f1ef		       85 02		      sta	WSYNC
-    127  f1ef					      REPEND
-    128  f1f1		       85 02		      sta	WSYNC
-    129  f1f3					      REPEND
-    130  f1f3
-    131  f1f3							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    132  f1f3							; Let the TIA output the 30 lines of overscan
-    133  f1f3							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    134  f1f3
-    135  f1f3		       a9 02		      lda	#2
-    136  f1f5		       85 01		      sta	VBLANK
-    137  f1f7
-    138  f1f7					      REPEAT	30
-    139  f1f7		       85 02		      sta	WSYNC
-    138  f1f7					      REPEND
-    139  f1f9		       85 02		      sta	WSYNC
-    138  f1f9					      REPEND
-    139  f1fb		       85 02		      sta	WSYNC
-    138  f1fb					      REPEND
-    139  f1fd		       85 02		      sta	WSYNC
-    138  f1fd					      REPEND
-    139  f1ff		       85 02		      sta	WSYNC
-    138  f1ff					      REPEND
-    139  f201		       85 02		      sta	WSYNC
-    138  f201					      REPEND
-    139  f203		       85 02		      sta	WSYNC
-    138  f203					      REPEND
-    139  f205		       85 02		      sta	WSYNC
-    138  f205					      REPEND
-    139  f207		       85 02		      sta	WSYNC
-    138  f207					      REPEND
-    139  f209		       85 02		      sta	WSYNC
-    138  f209					      REPEND
-    139  f20b		       85 02		      sta	WSYNC
-    138  f20b					      REPEND
-    139  f20d		       85 02		      sta	WSYNC
-    138  f20d					      REPEND
-    139  f20f		       85 02		      sta	WSYNC
-    138  f20f					      REPEND
-    139  f211		       85 02		      sta	WSYNC
-    138  f211					      REPEND
-    139  f213		       85 02		      sta	WSYNC
-    138  f213					      REPEND
-    139  f215		       85 02		      sta	WSYNC
-    138  f215					      REPEND
-    139  f217		       85 02		      sta	WSYNC
-    138  f217					      REPEND
-    139  f219		       85 02		      sta	WSYNC
-    138  f219					      REPEND
-    139  f21b		       85 02		      sta	WSYNC
-    138  f21b					      REPEND
-    139  f21d		       85 02		      sta	WSYNC
-    138  f21d					      REPEND
-    139  f21f		       85 02		      sta	WSYNC
-    138  f21f					      REPEND
-    139  f221		       85 02		      sta	WSYNC
-    138  f221					      REPEND
-    139  f223		       85 02		      sta	WSYNC
-    138  f223					      REPEND
-    139  f225		       85 02		      sta	WSYNC
-    138  f225					      REPEND
-    139  f227		       85 02		      sta	WSYNC
-    138  f227					      REPEND
-    139  f229		       85 02		      sta	WSYNC
-    138  f229					      REPEND
-    139  f22b		       85 02		      sta	WSYNC
-    138  f22b					      REPEND
-    139  f22d		       85 02		      sta	WSYNC
-    138  f22d					      REPEND
-    139  f22f		       85 02		      sta	WSYNC
-    138  f22f					      REPEND
-    139  f231		       85 02		      sta	WSYNC
-    140  f233					      REPEND
-    141  f233
-    142  f233		       a9 00		      lda	#0
-    143  f235		       85 01		      sta	VBLANK
-    144  f237
-    145  f237							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    146  f237							; Repeat Game Loop
-    147  f237							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    148  f237
-    149  f237		       4c 00 f0 	      jmp	Start
-    150  f23a
-    151  f23a							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    152  f23a							; Store Sprites
-    153  f23a							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    154  f23a
-    155  ffe8					      org	$FFE8
-    156  ffe8				   PlayerBitmap
-    157  ffe8		       7e		      .byte.b	#%01111110	;  ######
-    158  ffe9		       ff		      .byte.b	#%11111111	; ########
-    159  ffea		       99		      .byte.b	#%10011001	; #  ##  #
-    160  ffeb		       ff		      .byte.b	#%11111111	; ########
-    161  ffec		       ff		      .byte.b	#%11111111	; ########
-    162  ffed		       ff		      .byte.b	#%11111111	; ########
-    163  ffee		       bd		      .byte.b	#%10111101	; # #### #
-    164  ffef		       c3		      .byte.b	#%11000011	; ##	 ##
-    165  fff0		       ff		      .byte.b	#%11111111	; ########
-    166  fff1		       7e		      .byte.b	#%01111110	;  ######
-    167  fff2
-    168  fff2					      org	$FFF2
-    169  fff2				   NumberBitmap
-    170  fff2		       0e		      .byte.b	#%00001110	; ########
-    171  fff3		       0e		      .byte.b	#%00001110	; ########
-    172  fff4		       02		      .byte.b	#%00000010	;	###
-    173  fff5		       02		      .byte.b	#%00000010	;	###
-    174  fff6		       0e		      .byte.b	#%00001110	; ########
-    175  fff7		       0e		      .byte.b	#%00001110	; ########
-    176  fff8		       08		      .byte.b	#%00001000	; ###
-    177  fff9		       08		      .byte.b	#%00001000	; ###
-    178  fffa		       0e		      .byte.b	#%00001110	; ########
-    179  fffb		       0e		      .byte.b	#%00001110	; ########
-    180  fffc
-    181  fffc							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    182  fffc							; Complete ROM size to 4kb
-    183  fffc							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    184  fffc					      org	$FFFC
-    185  fffc		       00 f0		      .word.w	Start
-    186  fffe		       00 f0		      .word.w	Start
+     21  f00b
+     22  f00b							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     23  f00b							; Set Game Colors
+     24  f00b							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     25  f00b
+     26  f00b		       a2 70		      ldx	#$70
+     27  f00d		       86 09		      stx	COLUBK
+     28  f00f
+     29  f00f		       a2 0f		      ldx	#%1111
+     30  f011		       86 08		      stx	COLUPF
+     31  f013
+     32  f013		       a2 6e		      ldx	#$6E
+     33  f015		       86 06		      stx	COLUP0
+     34  f017
+     35  f017		       a2 cc		      ldx	#$CC
+     36  f019		       86 07		      stx	COLUP1
+     37  f01b
+     38  f01b		       a2 0a		      ldx	#10
+     39  f01d		       86 80		      stx	P0Height
+     40  f01f		       86 81		      stx	P1Height
+     41  f021
+     42  f021							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     43  f021							; Start a new frame by turning on VBLANK and VSYNC
+     44  f021							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     45  f021
+     46  f021				   NextFrame
+     47  f021		       a9 02		      lda	#2
+     48  f023		       85 00		      sta	VSYNC
+     49  f025		       85 01		      sta	VBLANK
+     50  f027
+     51  f027							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     52  f027							; Generate the three lines of VSYNC
+     53  f027							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     54  f027
+     55  f027					      REPEAT	3
+     56  f027		       85 02		      sta	WSYNC
+     55  f027					      REPEND
+     56  f029		       85 02		      sta	WSYNC
+     55  f029					      REPEND
+     56  f02b		       85 02		      sta	WSYNC
+     57  f02d					      REPEND
+     58  f02d
+     59  f02d		       a9 00		      lda	#0
+     60  f02f		       85 00		      sta	VSYNC
+     61  f031
+     62  f031							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     63  f031							; Let TIA output 37 lines of VBLANK
+     64  f031							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     65  f031
+     66  f031					      REPEAT	37
+     67  f031		       85 02		      sta	WSYNC
+     66  f031					      REPEND
+     67  f033		       85 02		      sta	WSYNC
+     66  f033					      REPEND
+     67  f035		       85 02		      sta	WSYNC
+     66  f035					      REPEND
+     67  f037		       85 02		      sta	WSYNC
+     66  f037					      REPEND
+     67  f039		       85 02		      sta	WSYNC
+     66  f039					      REPEND
+     67  f03b		       85 02		      sta	WSYNC
+     66  f03b					      REPEND
+     67  f03d		       85 02		      sta	WSYNC
+     66  f03d					      REPEND
+     67  f03f		       85 02		      sta	WSYNC
+     66  f03f					      REPEND
+     67  f041		       85 02		      sta	WSYNC
+     66  f041					      REPEND
+     67  f043		       85 02		      sta	WSYNC
+     66  f043					      REPEND
+     67  f045		       85 02		      sta	WSYNC
+     66  f045					      REPEND
+     67  f047		       85 02		      sta	WSYNC
+     66  f047					      REPEND
+     67  f049		       85 02		      sta	WSYNC
+     66  f049					      REPEND
+     67  f04b		       85 02		      sta	WSYNC
+     66  f04b					      REPEND
+     67  f04d		       85 02		      sta	WSYNC
+     66  f04d					      REPEND
+     67  f04f		       85 02		      sta	WSYNC
+     66  f04f					      REPEND
+     67  f051		       85 02		      sta	WSYNC
+     66  f051					      REPEND
+     67  f053		       85 02		      sta	WSYNC
+     66  f053					      REPEND
+     67  f055		       85 02		      sta	WSYNC
+     66  f055					      REPEND
+     67  f057		       85 02		      sta	WSYNC
+     66  f057					      REPEND
+     67  f059		       85 02		      sta	WSYNC
+     66  f059					      REPEND
+     67  f05b		       85 02		      sta	WSYNC
+     66  f05b					      REPEND
+     67  f05d		       85 02		      sta	WSYNC
+     66  f05d					      REPEND
+     67  f05f		       85 02		      sta	WSYNC
+     66  f05f					      REPEND
+     67  f061		       85 02		      sta	WSYNC
+     66  f061					      REPEND
+     67  f063		       85 02		      sta	WSYNC
+     66  f063					      REPEND
+     67  f065		       85 02		      sta	WSYNC
+     66  f065					      REPEND
+     67  f067		       85 02		      sta	WSYNC
+     66  f067					      REPEND
+     67  f069		       85 02		      sta	WSYNC
+     66  f069					      REPEND
+     67  f06b		       85 02		      sta	WSYNC
+     66  f06b					      REPEND
+     67  f06d		       85 02		      sta	WSYNC
+     66  f06d					      REPEND
+     67  f06f		       85 02		      sta	WSYNC
+     66  f06f					      REPEND
+     67  f071		       85 02		      sta	WSYNC
+     66  f071					      REPEND
+     67  f073		       85 02		      sta	WSYNC
+     66  f073					      REPEND
+     67  f075		       85 02		      sta	WSYNC
+     66  f075					      REPEND
+     67  f077		       85 02		      sta	WSYNC
+     66  f077					      REPEND
+     67  f079		       85 02		      sta	WSYNC
+     68  f07b					      REPEND
+     69  f07b
+     70  f07b		       a9 00		      lda	#0
+     71  f07d		       85 01		      sta	VBLANK
+     72  f07f
+     73  f07f							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     74  f07f							; Draw 192 visible scanlines
+     75  f07f							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     76  f07f
+     77  f07f					      REPEAT	10
+     78  f07f		       85 02		      sta	WSYNC
+     77  f07f					      REPEND
+     78  f081		       85 02		      sta	WSYNC
+     77  f081					      REPEND
+     78  f083		       85 02		      sta	WSYNC
+     77  f083					      REPEND
+     78  f085		       85 02		      sta	WSYNC
+     77  f085					      REPEND
+     78  f087		       85 02		      sta	WSYNC
+     77  f087					      REPEND
+     78  f089		       85 02		      sta	WSYNC
+     77  f089					      REPEND
+     78  f08b		       85 02		      sta	WSYNC
+     77  f08b					      REPEND
+     78  f08d		       85 02		      sta	WSYNC
+     77  f08d					      REPEND
+     78  f08f		       85 02		      sta	WSYNC
+     77  f08f					      REPEND
+     78  f091		       85 02		      sta	WSYNC
+     79  f093					      REPEND
+     80  f093
+     81  f093							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     82  f093							; Draw Scoreboard
+     83  f093							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     84  f093
+     85  f093		       a0 00		      ldy	#0
+     86  f095				   ScoreboardLoop
+     87  f095		       b9 f2 ff 	      lda	NumberBitmap,Y
+     88  f098		       85 0e		      sta	PF1
+     89  f09a		       85 02		      sta	WSYNC
+     90  f09c		       c8		      iny
+     91  f09d		       c0 0a		      cpy	#10
+     92  f09f		       d0 f4		      bne	ScoreboardLoop
+     93  f0a1
+     94  f0a1							; Disable playfield
+     95  f0a1		       a9 00		      lda	#0
+     96  f0a3		       85 0e		      sta	PF1
+     97  f0a5
+     98  f0a5							; Draw 50 empty scanlines
+     99  f0a5					      REPEAT	50
+    100  f0a5		       85 02		      sta	WSYNC
+     99  f0a5					      REPEND
+    100  f0a7		       85 02		      sta	WSYNC
+     99  f0a7					      REPEND
+    100  f0a9		       85 02		      sta	WSYNC
+     99  f0a9					      REPEND
+    100  f0ab		       85 02		      sta	WSYNC
+     99  f0ab					      REPEND
+    100  f0ad		       85 02		      sta	WSYNC
+     99  f0ad					      REPEND
+    100  f0af		       85 02		      sta	WSYNC
+     99  f0af					      REPEND
+    100  f0b1		       85 02		      sta	WSYNC
+     99  f0b1					      REPEND
+    100  f0b3		       85 02		      sta	WSYNC
+     99  f0b3					      REPEND
+    100  f0b5		       85 02		      sta	WSYNC
+     99  f0b5					      REPEND
+    100  f0b7		       85 02		      sta	WSYNC
+     99  f0b7					      REPEND
+    100  f0b9		       85 02		      sta	WSYNC
+     99  f0b9					      REPEND
+    100  f0bb		       85 02		      sta	WSYNC
+     99  f0bb					      REPEND
+    100  f0bd		       85 02		      sta	WSYNC
+     99  f0bd					      REPEND
+    100  f0bf		       85 02		      sta	WSYNC
+     99  f0bf					      REPEND
+    100  f0c1		       85 02		      sta	WSYNC
+     99  f0c1					      REPEND
+    100  f0c3		       85 02		      sta	WSYNC
+     99  f0c3					      REPEND
+    100  f0c5		       85 02		      sta	WSYNC
+     99  f0c5					      REPEND
+    100  f0c7		       85 02		      sta	WSYNC
+     99  f0c7					      REPEND
+    100  f0c9		       85 02		      sta	WSYNC
+     99  f0c9					      REPEND
+    100  f0cb		       85 02		      sta	WSYNC
+     99  f0cb					      REPEND
+    100  f0cd		       85 02		      sta	WSYNC
+     99  f0cd					      REPEND
+    100  f0cf		       85 02		      sta	WSYNC
+     99  f0cf					      REPEND
+    100  f0d1		       85 02		      sta	WSYNC
+     99  f0d1					      REPEND
+    100  f0d3		       85 02		      sta	WSYNC
+     99  f0d3					      REPEND
+    100  f0d5		       85 02		      sta	WSYNC
+     99  f0d5					      REPEND
+    100  f0d7		       85 02		      sta	WSYNC
+     99  f0d7					      REPEND
+    100  f0d9		       85 02		      sta	WSYNC
+     99  f0d9					      REPEND
+    100  f0db		       85 02		      sta	WSYNC
+     99  f0db					      REPEND
+    100  f0dd		       85 02		      sta	WSYNC
+     99  f0dd					      REPEND
+    100  f0df		       85 02		      sta	WSYNC
+     99  f0df					      REPEND
+    100  f0e1		       85 02		      sta	WSYNC
+     99  f0e1					      REPEND
+    100  f0e3		       85 02		      sta	WSYNC
+     99  f0e3					      REPEND
+    100  f0e5		       85 02		      sta	WSYNC
+     99  f0e5					      REPEND
+    100  f0e7		       85 02		      sta	WSYNC
+     99  f0e7					      REPEND
+    100  f0e9		       85 02		      sta	WSYNC
+     99  f0e9					      REPEND
+    100  f0eb		       85 02		      sta	WSYNC
+     99  f0eb					      REPEND
+    100  f0ed		       85 02		      sta	WSYNC
+     99  f0ed					      REPEND
+    100  f0ef		       85 02		      sta	WSYNC
+     99  f0ef					      REPEND
+    100  f0f1		       85 02		      sta	WSYNC
+     99  f0f1					      REPEND
+    100  f0f3		       85 02		      sta	WSYNC
+     99  f0f3					      REPEND
+    100  f0f5		       85 02		      sta	WSYNC
+     99  f0f5					      REPEND
+    100  f0f7		       85 02		      sta	WSYNC
+     99  f0f7					      REPEND
+    100  f0f9		       85 02		      sta	WSYNC
+     99  f0f9					      REPEND
+    100  f0fb		       85 02		      sta	WSYNC
+     99  f0fb					      REPEND
+    100  f0fd		       85 02		      sta	WSYNC
+     99  f0fd					      REPEND
+    100  f0ff		       85 02		      sta	WSYNC
+     99  f0ff					      REPEND
+    100  f101		       85 02		      sta	WSYNC
+     99  f101					      REPEND
+    100  f103		       85 02		      sta	WSYNC
+     99  f103					      REPEND
+    100  f105		       85 02		      sta	WSYNC
+     99  f105					      REPEND
+    100  f107		       85 02		      sta	WSYNC
+    101  f109					      REPEND
+    102  f109
+    103  f109							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    104  f109							; Displays 10 scanlines for player one
+    105  f109							; Pulls data from an array of bytes defined at PlayerBitmap
+    106  f109							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    107  f109
+    108  f109		       a0 00		      ldy	#0
+    109  f10b				   PlayerLoop
+    110  f10b		       b9 e8 ff 	      lda	PlayerBitmap,Y
+    111  f10e		       85 1b		      sta	GRP0
+    112  f110		       85 02		      sta	WSYNC
+    113  f112		       c8		      iny
+    114  f113		       c4 80		      cpy	P0Height
+    115  f115		       d0 f4		      bne	PlayerLoop
+    116  f117
+    117  f117		       a9 00		      lda	#0
+    118  f119		       85 1b		      sta	GRP0
+    119  f11b
+    120  f11b							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    121  f11b							; Displays 10 scanlines for player two
+    122  f11b							; Pulls data from an array of bytes defined at PlayerBitmap
+    123  f11b							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    124  f11b
+    125  f11b		       a0 00		      ldy	#0
+    126  f11d				   PlayerTwoLoop
+    127  f11d		       b9 e8 ff 	      lda	PlayerBitmap,Y
+    128  f120		       85 1c		      sta	GRP1
+    129  f122		       85 02		      sta	WSYNC
+    130  f124		       c8		      iny
+    131  f125		       c4 81		      cpy	P1Height
+    132  f127		       d0 f4		      bne	PlayerTwoLoop
+    133  f129
+    134  f129		       a9 00		      lda	#0
+    135  f12b		       85 1c		      sta	GRP1
+    136  f12d
+    137  f12d							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    138  f12d							; Draw remaining 102 scanlines
+    139  f12d							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    140  f12d
+    141  f12d					      REPEAT	102
+    142  f12d		       85 02		      sta	WSYNC
+    141  f12d					      REPEND
+    142  f12f		       85 02		      sta	WSYNC
+    141  f12f					      REPEND
+    142  f131		       85 02		      sta	WSYNC
+    141  f131					      REPEND
+    142  f133		       85 02		      sta	WSYNC
+    141  f133					      REPEND
+    142  f135		       85 02		      sta	WSYNC
+    141  f135					      REPEND
+    142  f137		       85 02		      sta	WSYNC
+    141  f137					      REPEND
+    142  f139		       85 02		      sta	WSYNC
+    141  f139					      REPEND
+    142  f13b		       85 02		      sta	WSYNC
+    141  f13b					      REPEND
+    142  f13d		       85 02		      sta	WSYNC
+    141  f13d					      REPEND
+    142  f13f		       85 02		      sta	WSYNC
+    141  f13f					      REPEND
+    142  f141		       85 02		      sta	WSYNC
+    141  f141					      REPEND
+    142  f143		       85 02		      sta	WSYNC
+    141  f143					      REPEND
+    142  f145		       85 02		      sta	WSYNC
+    141  f145					      REPEND
+    142  f147		       85 02		      sta	WSYNC
+    141  f147					      REPEND
+    142  f149		       85 02		      sta	WSYNC
+    141  f149					      REPEND
+    142  f14b		       85 02		      sta	WSYNC
+    141  f14b					      REPEND
+    142  f14d		       85 02		      sta	WSYNC
+    141  f14d					      REPEND
+    142  f14f		       85 02		      sta	WSYNC
+    141  f14f					      REPEND
+    142  f151		       85 02		      sta	WSYNC
+    141  f151					      REPEND
+    142  f153		       85 02		      sta	WSYNC
+    141  f153					      REPEND
+    142  f155		       85 02		      sta	WSYNC
+    141  f155					      REPEND
+    142  f157		       85 02		      sta	WSYNC
+    141  f157					      REPEND
+    142  f159		       85 02		      sta	WSYNC
+    141  f159					      REPEND
+    142  f15b		       85 02		      sta	WSYNC
+    141  f15b					      REPEND
+    142  f15d		       85 02		      sta	WSYNC
+    141  f15d					      REPEND
+    142  f15f		       85 02		      sta	WSYNC
+    141  f15f					      REPEND
+    142  f161		       85 02		      sta	WSYNC
+    141  f161					      REPEND
+    142  f163		       85 02		      sta	WSYNC
+    141  f163					      REPEND
+    142  f165		       85 02		      sta	WSYNC
+    141  f165					      REPEND
+    142  f167		       85 02		      sta	WSYNC
+    141  f167					      REPEND
+    142  f169		       85 02		      sta	WSYNC
+    141  f169					      REPEND
+    142  f16b		       85 02		      sta	WSYNC
+    141  f16b					      REPEND
+    142  f16d		       85 02		      sta	WSYNC
+    141  f16d					      REPEND
+    142  f16f		       85 02		      sta	WSYNC
+    141  f16f					      REPEND
+    142  f171		       85 02		      sta	WSYNC
+    141  f171					      REPEND
+    142  f173		       85 02		      sta	WSYNC
+    141  f173					      REPEND
+    142  f175		       85 02		      sta	WSYNC
+    141  f175					      REPEND
+    142  f177		       85 02		      sta	WSYNC
+    141  f177					      REPEND
+    142  f179		       85 02		      sta	WSYNC
+    141  f179					      REPEND
+    142  f17b		       85 02		      sta	WSYNC
+    141  f17b					      REPEND
+    142  f17d		       85 02		      sta	WSYNC
+    141  f17d					      REPEND
+    142  f17f		       85 02		      sta	WSYNC
+    141  f17f					      REPEND
+    142  f181		       85 02		      sta	WSYNC
+    141  f181					      REPEND
+    142  f183		       85 02		      sta	WSYNC
+    141  f183					      REPEND
+    142  f185		       85 02		      sta	WSYNC
+    141  f185					      REPEND
+    142  f187		       85 02		      sta	WSYNC
+    141  f187					      REPEND
+    142  f189		       85 02		      sta	WSYNC
+    141  f189					      REPEND
+    142  f18b		       85 02		      sta	WSYNC
+    141  f18b					      REPEND
+    142  f18d		       85 02		      sta	WSYNC
+    141  f18d					      REPEND
+    142  f18f		       85 02		      sta	WSYNC
+    141  f18f					      REPEND
+    142  f191		       85 02		      sta	WSYNC
+    141  f191					      REPEND
+    142  f193		       85 02		      sta	WSYNC
+    141  f193					      REPEND
+    142  f195		       85 02		      sta	WSYNC
+    141  f195					      REPEND
+    142  f197		       85 02		      sta	WSYNC
+    141  f197					      REPEND
+    142  f199		       85 02		      sta	WSYNC
+    141  f199					      REPEND
+    142  f19b		       85 02		      sta	WSYNC
+    141  f19b					      REPEND
+    142  f19d		       85 02		      sta	WSYNC
+    141  f19d					      REPEND
+    142  f19f		       85 02		      sta	WSYNC
+    141  f19f					      REPEND
+    142  f1a1		       85 02		      sta	WSYNC
+    141  f1a1					      REPEND
+    142  f1a3		       85 02		      sta	WSYNC
+    141  f1a3					      REPEND
+    142  f1a5		       85 02		      sta	WSYNC
+    141  f1a5					      REPEND
+    142  f1a7		       85 02		      sta	WSYNC
+    141  f1a7					      REPEND
+    142  f1a9		       85 02		      sta	WSYNC
+    141  f1a9					      REPEND
+    142  f1ab		       85 02		      sta	WSYNC
+    141  f1ab					      REPEND
+    142  f1ad		       85 02		      sta	WSYNC
+    141  f1ad					      REPEND
+    142  f1af		       85 02		      sta	WSYNC
+    141  f1af					      REPEND
+    142  f1b1		       85 02		      sta	WSYNC
+    141  f1b1					      REPEND
+    142  f1b3		       85 02		      sta	WSYNC
+    141  f1b3					      REPEND
+    142  f1b5		       85 02		      sta	WSYNC
+    141  f1b5					      REPEND
+    142  f1b7		       85 02		      sta	WSYNC
+    141  f1b7					      REPEND
+    142  f1b9		       85 02		      sta	WSYNC
+    141  f1b9					      REPEND
+    142  f1bb		       85 02		      sta	WSYNC
+    141  f1bb					      REPEND
+    142  f1bd		       85 02		      sta	WSYNC
+    141  f1bd					      REPEND
+    142  f1bf		       85 02		      sta	WSYNC
+    141  f1bf					      REPEND
+    142  f1c1		       85 02		      sta	WSYNC
+    141  f1c1					      REPEND
+    142  f1c3		       85 02		      sta	WSYNC
+    141  f1c3					      REPEND
+    142  f1c5		       85 02		      sta	WSYNC
+    141  f1c5					      REPEND
+    142  f1c7		       85 02		      sta	WSYNC
+    141  f1c7					      REPEND
+    142  f1c9		       85 02		      sta	WSYNC
+    141  f1c9					      REPEND
+    142  f1cb		       85 02		      sta	WSYNC
+    141  f1cb					      REPEND
+    142  f1cd		       85 02		      sta	WSYNC
+    141  f1cd					      REPEND
+    142  f1cf		       85 02		      sta	WSYNC
+    141  f1cf					      REPEND
+    142  f1d1		       85 02		      sta	WSYNC
+    141  f1d1					      REPEND
+    142  f1d3		       85 02		      sta	WSYNC
+    141  f1d3					      REPEND
+    142  f1d5		       85 02		      sta	WSYNC
+    141  f1d5					      REPEND
+    142  f1d7		       85 02		      sta	WSYNC
+    141  f1d7					      REPEND
+    142  f1d9		       85 02		      sta	WSYNC
+    141  f1d9					      REPEND
+    142  f1db		       85 02		      sta	WSYNC
+    141  f1db					      REPEND
+    142  f1dd		       85 02		      sta	WSYNC
+    141  f1dd					      REPEND
+    142  f1df		       85 02		      sta	WSYNC
+    141  f1df					      REPEND
+    142  f1e1		       85 02		      sta	WSYNC
+    141  f1e1					      REPEND
+    142  f1e3		       85 02		      sta	WSYNC
+    141  f1e3					      REPEND
+    142  f1e5		       85 02		      sta	WSYNC
+    141  f1e5					      REPEND
+    142  f1e7		       85 02		      sta	WSYNC
+    141  f1e7					      REPEND
+    142  f1e9		       85 02		      sta	WSYNC
+    141  f1e9					      REPEND
+    142  f1eb		       85 02		      sta	WSYNC
+    141  f1eb					      REPEND
+    142  f1ed		       85 02		      sta	WSYNC
+    141  f1ed					      REPEND
+    142  f1ef		       85 02		      sta	WSYNC
+    141  f1ef					      REPEND
+    142  f1f1		       85 02		      sta	WSYNC
+    141  f1f1					      REPEND
+    142  f1f3		       85 02		      sta	WSYNC
+    141  f1f3					      REPEND
+    142  f1f5		       85 02		      sta	WSYNC
+    141  f1f5					      REPEND
+    142  f1f7		       85 02		      sta	WSYNC
+    143  f1f9					      REPEND
+    144  f1f9
+    145  f1f9							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    146  f1f9							; Let the TIA output the 30 lines of overscan
+    147  f1f9							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    148  f1f9
+    149  f1f9		       a9 02		      lda	#2
+    150  f1fb		       85 01		      sta	VBLANK
+    151  f1fd
+    152  f1fd					      REPEAT	30
+    153  f1fd		       85 02		      sta	WSYNC
+    152  f1fd					      REPEND
+    153  f1ff		       85 02		      sta	WSYNC
+    152  f1ff					      REPEND
+    153  f201		       85 02		      sta	WSYNC
+    152  f201					      REPEND
+    153  f203		       85 02		      sta	WSYNC
+    152  f203					      REPEND
+    153  f205		       85 02		      sta	WSYNC
+    152  f205					      REPEND
+    153  f207		       85 02		      sta	WSYNC
+    152  f207					      REPEND
+    153  f209		       85 02		      sta	WSYNC
+    152  f209					      REPEND
+    153  f20b		       85 02		      sta	WSYNC
+    152  f20b					      REPEND
+    153  f20d		       85 02		      sta	WSYNC
+    152  f20d					      REPEND
+    153  f20f		       85 02		      sta	WSYNC
+    152  f20f					      REPEND
+    153  f211		       85 02		      sta	WSYNC
+    152  f211					      REPEND
+    153  f213		       85 02		      sta	WSYNC
+    152  f213					      REPEND
+    153  f215		       85 02		      sta	WSYNC
+    152  f215					      REPEND
+    153  f217		       85 02		      sta	WSYNC
+    152  f217					      REPEND
+    153  f219		       85 02		      sta	WSYNC
+    152  f219					      REPEND
+    153  f21b		       85 02		      sta	WSYNC
+    152  f21b					      REPEND
+    153  f21d		       85 02		      sta	WSYNC
+    152  f21d					      REPEND
+    153  f21f		       85 02		      sta	WSYNC
+    152  f21f					      REPEND
+    153  f221		       85 02		      sta	WSYNC
+    152  f221					      REPEND
+    153  f223		       85 02		      sta	WSYNC
+    152  f223					      REPEND
+    153  f225		       85 02		      sta	WSYNC
+    152  f225					      REPEND
+    153  f227		       85 02		      sta	WSYNC
+    152  f227					      REPEND
+    153  f229		       85 02		      sta	WSYNC
+    152  f229					      REPEND
+    153  f22b		       85 02		      sta	WSYNC
+    152  f22b					      REPEND
+    153  f22d		       85 02		      sta	WSYNC
+    152  f22d					      REPEND
+    153  f22f		       85 02		      sta	WSYNC
+    152  f22f					      REPEND
+    153  f231		       85 02		      sta	WSYNC
+    152  f231					      REPEND
+    153  f233		       85 02		      sta	WSYNC
+    152  f233					      REPEND
+    153  f235		       85 02		      sta	WSYNC
+    152  f235					      REPEND
+    153  f237		       85 02		      sta	WSYNC
+    154  f239					      REPEND
+    155  f239
+    156  f239		       a9 00		      lda	#0
+    157  f23b		       85 01		      sta	VBLANK
+    158  f23d
+    159  f23d							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    160  f23d							; Repeat Game Loop
+    161  f23d							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    162  f23d
+    163  f23d		       4c 00 f0 	      jmp	Start
+    164  f240
+    165  f240							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    166  f240							; Store Sprites
+    167  f240							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    168  f240
+    169  ffe8					      org	$FFE8
+    170  ffe8				   PlayerBitmap
+    171  ffe8		       7e		      .byte.b	#%01111110	;  ######
+    172  ffe9		       ff		      .byte.b	#%11111111	; ########
+    173  ffea		       99		      .byte.b	#%10011001	; #  ##  #
+    174  ffeb		       ff		      .byte.b	#%11111111	; ########
+    175  ffec		       ff		      .byte.b	#%11111111	; ########
+    176  ffed		       ff		      .byte.b	#%11111111	; ########
+    177  ffee		       bd		      .byte.b	#%10111101	; # #### #
+    178  ffef		       c3		      .byte.b	#%11000011	; ##	 ##
+    179  fff0		       ff		      .byte.b	#%11111111	; ########
+    180  fff1		       7e		      .byte.b	#%01111110	;  ######
+    181  fff2
+    182  fff2					      org	$FFF2
+    183  fff2				   NumberBitmap
+    184  fff2		       0e		      .byte.b	#%00001110	; ########
+    185  fff3		       0e		      .byte.b	#%00001110	; ########
+    186  fff4		       02		      .byte.b	#%00000010	;	###
+    187  fff5		       02		      .byte.b	#%00000010	;	###
+    188  fff6		       0e		      .byte.b	#%00001110	; ########
+    189  fff7		       0e		      .byte.b	#%00001110	; ########
+    190  fff8		       08		      .byte.b	#%00001000	; ###
+    191  fff9		       08		      .byte.b	#%00001000	; ###
+    192  fffa		       0e		      .byte.b	#%00001110	; ########
+    193  fffb		       0e		      .byte.b	#%00001110	; ########
+    194  fffc
+    195  fffc							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    196  fffc							; Complete ROM size to 4kb
+    197  fffc							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    198  fffc					      org	$FFFC
+    199  fffc		       00 f0		      .word.w	Start
+    200  fffe		       00 f0		      .word.w	Start

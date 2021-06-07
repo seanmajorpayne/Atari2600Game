@@ -40,16 +40,18 @@ INPT3                    000b
 INPT4                    000c                  
 INPT5                    000d                  
 INTIM                    0284                  
-NextFrame                f01b                  
+NextFrame                f021                  
 NumberBitmap             fff2              (R )
 NUSIZ0                   0004                  
 NUSIZ1                   0005                  
+P0Height                 0080              (R )
+P1Height                 0081              (R )
 PF0                      000d                  
 PF1                      000e              (R )
 PF2                      000f                  
 PlayerBitmap             ffe8              (R )
-PlayerLoop               f105              (R )
-PlayerTwoLoop            f117              (R )
+PlayerLoop               f10b              (R )
+PlayerTwoLoop            f11d              (R )
 REFP0                    000b                  
 REFP1                    000c                  
 RESBL                    0014                  
@@ -60,7 +62,7 @@ RESMP1                   0029
 RESP0                    0010                  
 RESP1                    0011                  
 RSYNC                    0003                  
-ScoreboardLoop           f08f              (R )
+ScoreboardLoop           f095              (R )
 Start                    f000              (R )
 SWACNT                   0281                  
 SWBCNT                   0283                  
