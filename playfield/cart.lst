@@ -554,11 +554,11 @@
      75  f0a3		       85 02		      sta	WSYNC
      76  f0a5					      REPEND
      77  f0a5
-     78  f0a5		       a2 20		      ldx	#%00100000
+     78  f0a5		       a2 60		      ldx	#%01100000
      79  f0a7		       86 0d		      stx	PF0
      80  f0a9		       a2 00		      ldx	#%00000000
      81  f0ab		       86 0e		      stx	PF1
-     82  f0ad		       a2 00		      ldx	#%00000000
+     82  f0ad		       a2 80		      ldx	#%10000000
      83  f0af		       86 0f		      stx	PF2
      84  f0b1
      85  f0b1					      REPEAT	164
