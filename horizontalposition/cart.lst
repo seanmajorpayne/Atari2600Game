@@ -407,148 +407,158 @@
      28  f013		       a9 09		      lda	#9
      29  f015		       85 80		      sta	P0Height
      30  f017
-     31  f017				   SetHorizPos
-     32  f017		       a9 28		      lda	#40
-     33  f019		       85 81		      sta	Player0XPos
-     34  f01b
-     35  f01b							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     36  f01b							; VSYNC & VBLANK Initialize
-     37  f01b							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     38  f01b
-     39  f01b				   Frame
-     40  f01b		       a9 02		      lda	#2
-     41  f01d		       85 00		      sta	VSYNC
-     42  f01f		       85 01		      sta	VBLANK
-     43  f021
-     44  f021							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     45  f021							; VSYNC
-     46  f021							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     47  f021
-     48  f021		       a2 03		      ldx	#3
-     49  f023				   Sync
-     50  f023		       85 02		      sta	WSYNC
-     51  f025		       ca		      dex
-     52  f026		       d0 fb		      bne	Sync
-     53  f028
-     54  f028		       a9 00		      lda	#0
-     55  f02a		       85 00		      sta	VSYNC
-     56  f02c
-     57  f02c							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     58  f02c							; Set Player Horizontal Position
-     59  f02c							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     60  f02c
-     61  f02c		       a5 81		      lda	Player0XPos
-     62  f02e		       29 7f		      and	#$7F	; Position must be positive
-     63  f030
-     64  f030		       85 02		      sta	WSYNC
-     65  f032		       85 2b		      sta	HMCLR
-     66  f034
-     67  f034		       38		      sec
-     68  f035				   DivideLoop		; Get remainder - 3 for fine position
-     69  f035		       e9 0f		      sbc	#15
-     70  f037		       b0 fc		      bcs	DivideLoop
-     71  f039
-     72  f039		       49 07		      eor	#7
-     73  f03b		       0a		      asl
-     74  f03c		       0a		      asl
-     75  f03d		       0a		      asl
-     76  f03e		       0a		      asl
-     77  f03f		       85 20		      sta	HMP0	; set fine position
-     78  f041		       85 10		      sta	RESP0	; reset 15-step brute position
-     79  f043		       85 02		      sta	WSYNC	; wait for scanline
-     80  f045		       85 2a		      sta	HMOVE	; apply find position offset
-     81  f047
-     82  f047							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     83  f047							; VBlank (37 - the 2 applied above)
-     84  f047							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     85  f047
-     86  f047		       a2 23		      ldx	#35
-     87  f049				   VerticalBlank
-     88  f049		       85 02		      sta	WSYNC
-     89  f04b		       ca		      dex
-     90  f04c		       d0 fb		      bne	VerticalBlank
-     91  f04e
-     92  f04e		       a9 00		      lda	#0
-     93  f050		       85 01		      sta	VBLANK
-     94  f052
-     95  f052							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     96  f052							; Render visible scanlines
-     97  f052							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     98  f052
-     99  f052		       a2 c0		      ldx	#192
-    100  f054				   Scanline
-    101  f054		       8a		      txa
-    102  f055		       38		      sec
-    103  f056		       e5 82		      sbc	Player0YPos
-    104  f058		       c5 80		      cmp	P0Height
-    105  f05a		       90 02		      bcc	RenderBitmap
-    106  f05c		       a9 00		      lda	#0
-    107  f05e
-    108  f05e				   RenderBitmap
-    109  f05e		       a8		      tay
-    110  f05f		       b9 8a f0 	      lda	P0Bitmap,Y
-    111  f062		       85 1b		      sta	GRP0
-    112  f064		       b9 93 f0 	      lda	P0Color,Y
-    113  f067		       85 06		      sta	COLUP0
-    114  f069		       85 02		      sta	WSYNC
-    115  f06b		       ca		      dex
-    116  f06c		       d0 e6		      bne	Scanline
-    117  f06e
-    118  f06e							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    119  f06e							; Overscan
-    120  f06e							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    121  f06e
-    122  f06e		       a9 02		      lda	#2
-    123  f070		       85 01		      sta	VBLANK
-    124  f072
-    125  f072		       a2 1e		      ldx	#30
-    126  f074				   Overscan
-    127  f074		       85 02		      sta	WSYNC
-    128  f076		       ca		      dex
-    129  f077		       d0 fb		      bne	Overscan
-    130  f079
-    131  f079		       a9 00		      lda	#0
-    132  f07b		       85 01		      sta	VBLANK
-    133  f07d
-    134  f07d		       c6 82		      dec	Player0YPos
-    135  f07f
-    136  f07f		       e6 81		      inc	Player0XPos
-    137  f081		       a5 81		      lda	Player0XPos
-    138  f083		       c9 50		      cmp	#80
-    139  f085		       f0 90		      beq	SetHorizPos
-    140  f087
-    141  f087		       4c 1b f0 	      jmp	Frame
-    142  f08a
-    143  f08a							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    144  f08a							; Bitmaps & Colors
-    145  f08a							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    146  f08a
-    147  f08a				   P0Bitmap
-    148  f08a		       00		      byte.b	#%00000000
-    149  f08b		       28		      byte.b	#%00101000
-    150  f08c		       74		      byte.b	#%01110100
-    151  f08d		       fa		      byte.b	#%11111010
-    152  f08e		       fa		      byte.b	#%11111010
-    153  f08f		       fa		      byte.b	#%11111010
-    154  f090		       fe		      byte.b	#%11111110
-    155  f091		       6c		      byte.b	#%01101100
-    156  f092		       30		      byte.b	#%00110000
-    157  f093
-    158  f093				   P0Color
-    159  f093		       00		      byte.b	#$00
-    160  f094		       40		      byte.b	#$40
-    161  f095		       40		      byte.b	#$40
-    162  f096		       40		      byte.b	#$40
-    163  f097		       40		      byte.b	#$40
-    164  f098		       42		      byte.b	#$42
-    165  f099		       42		      byte.b	#$42
-    166  f09a		       44		      byte.b	#$44
-    167  f09b		       d2		      byte.b	#$D2
-    168  f09c
-    169  f09c							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    170  f09c							; Finish player ROM to 4KB
-    171  f09c							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    172  fffc					      org	$FFFC
-    173  fffc		       00 f0		      word.w	Reset
-    174  fffe		       00 f0		      word.w	Reset
-    175  10000
+     31  f017		       a9 28		      lda	#40
+     32  f019		       85 81		      sta	Player0XPos
+     33  f01b
+     34  f01b							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     35  f01b							; VSYNC & VBLANK Initialize
+     36  f01b							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     37  f01b
+     38  f01b				   Frame
+     39  f01b		       a9 02		      lda	#2
+     40  f01d		       85 00		      sta	VSYNC
+     41  f01f		       85 01		      sta	VBLANK
+     42  f021
+     43  f021							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     44  f021							; VSYNC
+     45  f021							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     46  f021
+     47  f021		       a2 03		      ldx	#3
+     48  f023				   Sync
+     49  f023		       85 02		      sta	WSYNC
+     50  f025		       ca		      dex
+     51  f026		       d0 fb		      bne	Sync
+     52  f028
+     53  f028		       a9 00		      lda	#0
+     54  f02a		       85 00		      sta	VSYNC
+     55  f02c
+     56  f02c							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     57  f02c							; Set Player Horizontal Position
+     58  f02c							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     59  f02c
+     60  f02c		       a5 81		      lda	Player0XPos
+     61  f02e		       29 7f		      and	#$7F	; Position must be positive
+     62  f030
+     63  f030		       85 02		      sta	WSYNC
+     64  f032		       85 2b		      sta	HMCLR
+     65  f034
+     66  f034		       38		      sec
+     67  f035				   DivideLoop		; Get remainder - 3 for fine position
+     68  f035		       e9 0f		      sbc	#15
+     69  f037		       b0 fc		      bcs	DivideLoop
+     70  f039
+     71  f039		       49 07		      eor	#7
+     72  f03b		       0a		      asl
+     73  f03c		       0a		      asl
+     74  f03d		       0a		      asl
+     75  f03e		       0a		      asl
+     76  f03f		       85 20		      sta	HMP0	; set fine position
+     77  f041		       85 10		      sta	RESP0	; reset 15-step brute position
+     78  f043		       85 02		      sta	WSYNC	; wait for scanline
+     79  f045		       85 2a		      sta	HMOVE	; apply find position offset
+     80  f047
+     81  f047							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     82  f047							; VBlank (37 - the 2 applied above)
+     83  f047							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     84  f047
+     85  f047		       a2 23		      ldx	#35
+     86  f049				   VerticalBlank
+     87  f049		       85 02		      sta	WSYNC
+     88  f04b		       ca		      dex
+     89  f04c		       d0 fb		      bne	VerticalBlank
+     90  f04e
+     91  f04e		       a9 00		      lda	#0
+     92  f050		       85 01		      sta	VBLANK
+     93  f052
+     94  f052							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     95  f052							; Render visible scanlines
+     96  f052							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     97  f052
+     98  f052		       a2 c0		      ldx	#192
+     99  f054				   Scanline
+    100  f054		       8a		      txa
+    101  f055		       38		      sec
+    102  f056		       e5 82		      sbc	Player0YPos
+    103  f058		       c5 80		      cmp	P0Height
+    104  f05a		       90 02		      bcc	RenderBitmap
+    105  f05c		       a9 00		      lda	#0
+    106  f05e
+    107  f05e				   RenderBitmap
+    108  f05e		       a8		      tay
+    109  f05f		       b9 91 f0 	      lda	P0Bitmap,Y
+    110  f062		       85 1b		      sta	GRP0
+    111  f064		       b9 9a f0 	      lda	P0Color,Y
+    112  f067		       85 06		      sta	COLUP0
+    113  f069		       85 02		      sta	WSYNC
+    114  f06b		       ca		      dex
+    115  f06c		       d0 e6		      bne	Scanline
+    116  f06e
+    117  f06e							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    118  f06e							; Overscan
+    119  f06e							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    120  f06e
+    121  f06e		       a9 02		      lda	#2
+    122  f070		       85 01		      sta	VBLANK
+    123  f072
+    124  f072		       a2 1e		      ldx	#30
+    125  f074				   Overscan
+    126  f074		       85 02		      sta	WSYNC
+    127  f076		       ca		      dex
+    128  f077		       d0 fb		      bne	Overscan
+    129  f079
+    130  f079		       a9 00		      lda	#0
+    131  f07b		       85 01		      sta	VBLANK
+    132  f07d
+    133  f07d		       c6 82		      dec	Player0YPos
+    134  f07f
+    135  f07f							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    136  f07f							; Constrain horizontal position
+    137  f07f							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    138  f07f
+    139  f07f		       a5 81		      lda	Player0XPos
+    140  f081		       c9 50		      cmp	#80
+    141  f083		       10 03		      bpl	ResetXPos
+    142  f085		       4c 8c f0 	      jmp	IncrXPos
+    143  f088
+    144  f088				   ResetXPos
+    145  f088		       a2 28		      ldx	#40
+    146  f08a		       86 81		      stx	Player0XPos
+    147  f08c
+    148  f08c				   IncrXPos
+    149  f08c		       e6 81		      inc	Player0XPos
+    150  f08e
+    151  f08e		       4c 1b f0 	      jmp	Frame
+    152  f091
+    153  f091							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    154  f091							; Bitmaps & Colors
+    155  f091							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    156  f091
+    157  f091				   P0Bitmap
+    158  f091		       00		      byte.b	#%00000000
+    159  f092		       28		      byte.b	#%00101000
+    160  f093		       74		      byte.b	#%01110100
+    161  f094		       fa		      byte.b	#%11111010
+    162  f095		       fa		      byte.b	#%11111010
+    163  f096		       fa		      byte.b	#%11111010
+    164  f097		       fe		      byte.b	#%11111110
+    165  f098		       6c		      byte.b	#%01101100
+    166  f099		       30		      byte.b	#%00110000
+    167  f09a
+    168  f09a				   P0Color
+    169  f09a		       00		      byte.b	#$00
+    170  f09b		       40		      byte.b	#$40
+    171  f09c		       40		      byte.b	#$40
+    172  f09d		       40		      byte.b	#$40
+    173  f09e		       40		      byte.b	#$40
+    174  f09f		       42		      byte.b	#$42
+    175  f0a0		       42		      byte.b	#$42
+    176  f0a1		       44		      byte.b	#$44
+    177  f0a2		       d2		      byte.b	#$D2
+    178  f0a3
+    179  f0a3							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    180  f0a3							; Finish player ROM to 4KB
+    181  f0a3							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    182  fffc					      org	$FFFC
+    183  fffc		       00 f0		      word.w	Reset
+    184  fffe		       00 f0		      word.w	Reset
+    185  10000

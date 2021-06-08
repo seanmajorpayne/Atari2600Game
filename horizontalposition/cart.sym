@@ -35,6 +35,7 @@ HMM1                     0023
 HMOVE                    002a              (R )
 HMP0                     0020              (R )
 HMP1                     0021                  
+IncrXPos                 f08c              (R )
 INPT0                    0008                  
 INPT1                    0009                  
 INPT2                    000a                  
@@ -45,8 +46,8 @@ INTIM                    0284
 NUSIZ0                   0004                  
 NUSIZ1                   0005                  
 Overscan                 f074              (R )
-P0Bitmap                 f08a              (R )
-P0Color                  f093              (R )
+P0Bitmap                 f091              (R )
+P0Color                  f09a              (R )
 P0Height                 0080              (R )
 PF0                      000d                  
 PF1                      000e                  
@@ -58,6 +59,7 @@ REFP1                    000c
 RenderBitmap             f05e              (R )
 RESBL                    0014                  
 Reset                    f000              (R )
+ResetXPos                f088              (R )
 RESM0                    0012                  
 RESM1                    0013                  
 RESMP0                   0028                  
@@ -66,7 +68,6 @@ RESP0                    0010              (R )
 RESP1                    0011                  
 RSYNC                    0003                  
 Scanline                 f054              (R )
-SetHorizPos              f017              (R )
 SWACNT                   0281                  
 SWBCNT                   0283                  
 SWCHA                    0280                  

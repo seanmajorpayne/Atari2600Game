@@ -28,7 +28,6 @@ Reset:
     lda #9
     sta P0Height
 
-SetHorizPos:
     lda #40
     sta Player0XPos
 
@@ -133,10 +132,21 @@ Overscan:
 
     dec Player0YPos
 
-    inc Player0XPos
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Constrain horizontal position
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
     lda Player0XPos
     cmp #80
-    beq SetHorizPos
+    bpl ResetXPos
+    jmp IncrXPos
+
+ResetXPos:
+    ldx #40
+    stx Player0XPos
+
+IncrXPos:
+    inc Player0XPos
 
     jmp Frame
 
