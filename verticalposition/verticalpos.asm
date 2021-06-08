@@ -86,10 +86,10 @@ Scanlines:
 RenderBitmap:
     tay
     lda P0Bitmap,Y
-    sta WSYNC
     sta GRP0
     lda P0Color,Y
     sta COLUP0
+    sta WSYNC
     dex
     bne Scanlines
 
