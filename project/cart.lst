@@ -1,95 +1,95 @@
-------- FILE project.asm LEVEL 1 PASS 1
-      1  0000					      processor	6502
-      2  0000 ????
-      3  0000 ????						;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-      4  0000 ????						;; Include header files
-      5  0000 ????						;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-      6  0000 ????
-------- FILE vcs.h LEVEL 2 PASS 1
-      0  0000 ????				      include	"vcs.h"
-      1  0000 ????						; VCS.H
-      2  0000 ????						; Version 1.05, 13/November/2003
-      3  0000 ????
-      4  0000 ????	       00 69	   VERSION_VCS =	105
-      5  0000 ????
-      6  0000 ????						; THIS IS A PRELIMINARY RELEASE OF *THE* "STANDARD" VCS.H
-      7  0000 ????						; THIS FILE IS EXPLICITLY SUPPORTED AS A DASM-PREFERRED COMPANION FILE
-      8  0000 ????						; PLEASE DO *NOT* REDISTRIBUTE THIS FILE!
-      9  0000 ????						;
-     10  0000 ????						; This file defines hardware registers and memory mapping for the
-     11  0000 ????						; Atari 2600. It is distributed as a companion machine-specific support package
-     12  0000 ????						; for the DASM compiler. Updates to this file, DASM, and associated tools are
-     13  0000 ????						; available at at http://www.atari2600.org/dasm
-     14  0000 ????						;
-     15  0000 ????						; Many thanks to the original author(s) of this file, and to everyone who has
-     16  0000 ????						; contributed to understanding the Atari 2600.  If you take issue with the
-     17  0000 ????						; contents, or naming of registers, please write to me (atari2600@taswegian.com)
-     18  0000 ????						; with your views.  Please contribute, if you think you can improve this
-     19  0000 ????						; file!
-     20  0000 ????						;
-     21  0000 ????						; Latest Revisions...
-     22  0000 ????						; 1.05  13/NOV/2003	  - Correction to 1.04 - now functions as requested by MR.
-     23  0000 ????						;			  - Added VERSION_VCS equate (which will reflect 100x version #)
-     24  0000 ????						;			    This will allow conditional code to verify VCS.H being
-     25  0000 ????						;			    used for code assembly.
-     26  0000 ????						; 1.04  12/NOV/2003	 Added TIA_BASE_WRITE_ADDRESS and TIA_BASE_READ_ADDRESS for
-     27  0000 ????						;			 convenient disassembly/reassembly compatibility for hardware
-     28  0000 ????						;			 mirrored reading/writing differences.	This is more a 
-     29  0000 ????						;			 readability issue, and binary compatibility with disassembled
-     30  0000 ????						;			 and reassembled sources.  Per Manuel Rotschkar's suggestion.
-     31  0000 ????						; 1.03  12/MAY/2003	 Added SEG segment at end of file to fix old-code compatibility
-     32  0000 ????						;			 which was broken by the use of segments in this file, as
-     33  0000 ????						;			 reported by Manuel Polik on [stella] 11/MAY/2003
-     34  0000 ????						; 1.02  22/MAR/2003	 Added TIMINT($285)
-     35  0000 ????						; 1.01				Constant offset added to allow use for 3F-style bankswitching
-     36  0000 ????						;						 - define TIA_BASE_ADDRESS as $40 for Tigervision carts, otherwise
-     37  0000 ????						;						   it is safe to leave it undefined, and the base address will
-     38  0000 ????						;						   be set to 0.  Thanks to Eckhard Stolberg for the suggestion.
-     39  0000 ????						;			    Note, may use -DLABEL=EXPRESSION to define TIA_BASE_ADDRESS
-     40  0000 ????						;			  - register definitions are now generated through assignment
-     41  0000 ????						;			    in uninitialised segments.	This allows a changeable base
-     42  0000 ????						;			    address architecture.
-     43  0000 ????						; 1.0	22/MAR/2003		Initial release
-     44  0000 ????
-     45  0000 ????
-     46  0000 ????						;-------------------------------------------------------------------------------
-     47  0000 ????
-     48  0000 ????						; TIA_BASE_ADDRESS
-     49  0000 ????						; The TIA_BASE_ADDRESS defines the base address of access to TIA registers.
-     50  0000 ????						; Normally 0, the base address should (externally, before including this file)
-     51  0000 ????						; be set to $40 when creating 3F-bankswitched (and other?) cartridges.
-     52  0000 ????						; The reason is that this bankswitching scheme treats any access to locations
-     53  0000 ????						; < $40 as a bankswitch.
-     54  0000 ????
-     55  0000 ????				      IFNCONST	TIA_BASE_ADDRESS
-     56  0000 ????	       00 00	   TIA_BASE_ADDRESS =	0
-     57  0000 ????				      ENDIF
-     58  0000 ????
-     59  0000 ????						; Note: The address may be defined on the command-line using the -D switch, eg:
-     60  0000 ????						; dasm.exe code.asm -DTIA_BASE_ADDRESS=$40 -f3 -v5 -ocode.bin
-     61  0000 ????						; *OR* by declaring the label before including this file, eg:
-     62  0000 ????						; TIA_BASE_ADDRESS = $40
-     63  0000 ????						;   include "vcs.h"
-     64  0000 ????
-     65  0000 ????						; Alternate read/write address capability - allows for some disassembly compatibility
-     66  0000 ????						; usage ; to allow reassembly to binary perfect copies).  This is essentially catering
-     67  0000 ????						; for the mirrored ROM hardware registers.
-     68  0000 ????
-     69  0000 ????						; Usage: As per above, define the TIA_BASE_READ_ADDRESS and/or TIA_BASE_WRITE_ADDRESS
-     70  0000 ????						; using the -D command-line switch, as required.  If the addresses are not defined, 
-     71  0000 ????						; they defaut to the TIA_BASE_ADDRESS.
-     72  0000 ????
-     73  0000 ????				      IFNCONST	TIA_BASE_READ_ADDRESS
-     74  0000 ????	       00 00	   TIA_BASE_READ_ADDRESS =	TIA_BASE_ADDRESS
-     75  0000 ????				      ENDIF
-     76  0000 ????
-     77  0000 ????				      IFNCONST	TIA_BASE_WRITE_ADDRESS
-     78  0000 ????	       00 00	   TIA_BASE_WRITE_ADDRESS =	TIA_BASE_ADDRESS
-     79  0000 ????				      ENDIF
-     80  0000 ????
-     81  0000 ????						;-------------------------------------------------------------------------------
-     82  0000 ????
-     83 U0000 ????				      SEG.U	TIA_REGISTERS_WRITE
+------- FILE project.asm LEVEL 1 PASS 2
+      1  fffe					      processor	6502
+      2  10000 ????
+      3  10000 ????						;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      4  10000 ????						;; Include header files
+      5  10000 ????						;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      6  10000 ????
+------- FILE vcs.h LEVEL 2 PASS 2
+      0  10000 ????				       include	"vcs.h"
+      1  10000 ????						; VCS.H
+      2  10000 ????						; Version 1.05, 13/November/2003
+      3  10000 ????
+      4  10000 ????		00 69	    VERSION_VCS =	105
+      5  10000 ????
+      6  10000 ????						; THIS IS A PRELIMINARY RELEASE OF *THE* "STANDARD" VCS.H
+      7  10000 ????						; THIS FILE IS EXPLICITLY SUPPORTED AS A DASM-PREFERRED COMPANION FILE
+      8  10000 ????						; PLEASE DO *NOT* REDISTRIBUTE THIS FILE!
+      9  10000 ????						;
+     10  10000 ????						; This file defines hardware registers and memory mapping for the
+     11  10000 ????						; Atari 2600. It is distributed as a companion machine-specific support package
+     12  10000 ????						; for the DASM compiler. Updates to this file, DASM, and associated tools are
+     13  10000 ????						; available at at http://www.atari2600.org/dasm
+     14  10000 ????						;
+     15  10000 ????						; Many thanks to the original author(s) of this file, and to everyone who has
+     16  10000 ????						; contributed to understanding the Atari 2600.  If you take issue with the
+     17  10000 ????						; contents, or naming of registers, please write to me (atari2600@taswegian.com)
+     18  10000 ????						; with your views.  Please contribute, if you think you can improve this
+     19  10000 ????						; file!
+     20  10000 ????						;
+     21  10000 ????						; Latest Revisions...
+     22  10000 ????						; 1.05  13/NOV/2003	  - Correction to 1.04 - now functions as requested by MR.
+     23  10000 ????						;			  - Added VERSION_VCS equate (which will reflect 100x version #)
+     24  10000 ????						;			    This will allow conditional code to verify VCS.H being
+     25  10000 ????						;			    used for code assembly.
+     26  10000 ????						; 1.04  12/NOV/2003	 Added TIA_BASE_WRITE_ADDRESS and TIA_BASE_READ_ADDRESS for
+     27  10000 ????						;			 convenient disassembly/reassembly compatibility for hardware
+     28  10000 ????						;			 mirrored reading/writing differences.	This is more a 
+     29  10000 ????						;			 readability issue, and binary compatibility with disassembled
+     30  10000 ????						;			 and reassembled sources.  Per Manuel Rotschkar's suggestion.
+     31  10000 ????						; 1.03  12/MAY/2003	 Added SEG segment at end of file to fix old-code compatibility
+     32  10000 ????						;			 which was broken by the use of segments in this file, as
+     33  10000 ????						;			 reported by Manuel Polik on [stella] 11/MAY/2003
+     34  10000 ????						; 1.02  22/MAR/2003	 Added TIMINT($285)
+     35  10000 ????						; 1.01				Constant offset added to allow use for 3F-style bankswitching
+     36  10000 ????						;						 - define TIA_BASE_ADDRESS as $40 for Tigervision carts, otherwise
+     37  10000 ????						;						   it is safe to leave it undefined, and the base address will
+     38  10000 ????						;						   be set to 0.  Thanks to Eckhard Stolberg for the suggestion.
+     39  10000 ????						;			    Note, may use -DLABEL=EXPRESSION to define TIA_BASE_ADDRESS
+     40  10000 ????						;			  - register definitions are now generated through assignment
+     41  10000 ????						;			    in uninitialised segments.	This allows a changeable base
+     42  10000 ????						;			    address architecture.
+     43  10000 ????						; 1.0	22/MAR/2003		Initial release
+     44  10000 ????
+     45  10000 ????
+     46  10000 ????						;-------------------------------------------------------------------------------
+     47  10000 ????
+     48  10000 ????						; TIA_BASE_ADDRESS
+     49  10000 ????						; The TIA_BASE_ADDRESS defines the base address of access to TIA registers.
+     50  10000 ????						; Normally 0, the base address should (externally, before including this file)
+     51  10000 ????						; be set to $40 when creating 3F-bankswitched (and other?) cartridges.
+     52  10000 ????						; The reason is that this bankswitching scheme treats any access to locations
+     53  10000 ????						; < $40 as a bankswitch.
+     54  10000 ????
+     55  10000 ????			   -	       IFNCONST	TIA_BASE_ADDRESS
+     56  10000 ????			   -TIA_BASE_ADDRESS =	0
+     57  10000 ????				       ENDIF
+     58  10000 ????
+     59  10000 ????						; Note: The address may be defined on the command-line using the -D switch, eg:
+     60  10000 ????						; dasm.exe code.asm -DTIA_BASE_ADDRESS=$40 -f3 -v5 -ocode.bin
+     61  10000 ????						; *OR* by declaring the label before including this file, eg:
+     62  10000 ????						; TIA_BASE_ADDRESS = $40
+     63  10000 ????						;   include "vcs.h"
+     64  10000 ????
+     65  10000 ????						; Alternate read/write address capability - allows for some disassembly compatibility
+     66  10000 ????						; usage ; to allow reassembly to binary perfect copies).  This is essentially catering
+     67  10000 ????						; for the mirrored ROM hardware registers.
+     68  10000 ????
+     69  10000 ????						; Usage: As per above, define the TIA_BASE_READ_ADDRESS and/or TIA_BASE_WRITE_ADDRESS
+     70  10000 ????						; using the -D command-line switch, as required.  If the addresses are not defined, 
+     71  10000 ????						; they defaut to the TIA_BASE_ADDRESS.
+     72  10000 ????
+     73  10000 ????			   -	       IFNCONST	TIA_BASE_READ_ADDRESS
+     74  10000 ????			   -TIA_BASE_READ_ADDRESS =	TIA_BASE_ADDRESS
+     75  10000 ????				       ENDIF
+     76  10000 ????
+     77  10000 ????			   -	       IFNCONST	TIA_BASE_WRITE_ADDRESS
+     78  10000 ????			   -TIA_BASE_WRITE_ADDRESS =	TIA_BASE_ADDRESS
+     79  10000 ????				       ENDIF
+     80  10000 ????
+     81  10000 ????						;-------------------------------------------------------------------------------
+     82  10000 ????
+     83 U002d ????				      SEG.U	TIA_REGISTERS_WRITE
      84 U0000					      ORG	TIA_BASE_WRITE_ADDRESS
      85 U0000
      86 U0000							; DO NOT CHANGE THE RELATIVE ORDERING OF REGISTERS!
@@ -142,7 +142,7 @@
     133 U002d
     134 U002d							;-------------------------------------------------------------------------------
     135 U002d
-    136 U0000 ????				      SEG.U	TIA_REGISTERS_READ
+    136 U000e ????				      SEG.U	TIA_REGISTERS_READ
     137 U0000					      ORG	TIA_BASE_READ_ADDRESS
     138 U0000
     139 U0000							;											bit 7	 bit 6
@@ -163,7 +163,7 @@
     154 U000e
     155 U000e							;-------------------------------------------------------------------------------
     156 U000e
-    157 U0000 ????				      SEG.U	RIOT
+    157 U0298 ????				      SEG.U	RIOT
     158 U0280					      ORG	$280
     159 U0280
     160 U0280							; RIOT MEMORY MAP
@@ -208,7 +208,7 @@
     199  0000 ????
     200  0000 ????						; EOF
 ------- FILE project.asm
-------- FILE macro.h LEVEL 2 PASS 1
+------- FILE macro.h LEVEL 2 PASS 2
       0  0000 ????				      include	"macro.h"
       1  0000 ????						; MACRO.H
       2  0000 ????						; Version 1.06, 3/SEPTEMBER/2004
@@ -379,23 +379,32 @@
      11  0000 ????						;; Variables at memory addr $80
      12  0000 ????						;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      13  0000 ????
-     14 U0000 ????				      seg.u	Variables
+     14 U008c ????				      seg.u	Variables
      15 U0080					      org	$80
      16 U0080
      17 U0080		       00	   P0XPos     byte.b
      18 U0081		       00	   P0YPos     byte.b
      19 U0082		       00	   EnemyXPos  byte.b
      20 U0083		       00	   EnemyYPos  byte.b
-     21 U0084
-     22 U0084
-     23 U0084							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     24 U0084							;;  Start code
-     25 U0084							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     26 U0084
-     27  0000 ????				      seg	Code
-     28  f000					      org	$F000
-     29  f000
-     30  f000				   Start
+     21 U0084		       00 00	   P0Ptr      word.w
+     22 U0086		       00 00	   P0ColorPtr word.w
+     23 U0088		       00 00	   BomberPtr  word.w
+     24 U008a		       00 00	   BomberColorPtr word.w
+     25 U008c
+     26 U008c							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     27 U008c							;; Define Constants
+     28 U008c							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     29 U008c
+     30 U008c		       00 09	   P0_HEIGHT  =	9
+     31 U008c
+     32 U008c							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     33 U008c							;;  Start code
+     34 U008c							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     35 U008c
+     36  10000 ????				       seg	Code
+     37  f000					      org	$F000
+     38  f000
+     39  f000				   Start
       0  f000					      CLEAN_START
       1  f000		       78		      sei
       2  f001		       d8		      cld
@@ -408,124 +417,225 @@
       9  f008		       48		      pha
      10  f009		       d0 fb		      bne	.CLEAR_STACK
      11  f00b
-     32  f00b
-     33  f00b							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     34  f00b							;;  Initialize BG, Field, & Player variables
-     35  f00b							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     36  f00b
-     37  f00b		       a9 84		      lda	#$84
-     38  f00d		       85 09		      sta	COLUBK
-     39  f00f
-     40  f00f		       a9 c4		      lda	#$C4
-     41  f011		       85 08		      sta	COLUPF
-     42  f013
-     43  f013		       a9 0a		      lda	#10
-     44  f015		       85 81		      sta	P0YPos
-     45  f017
-     46  f017		       a9 3c		      lda	#60
-     47  f019		       85 80		      sta	P0XPos
-     48  f01b
-     49  f01b		       a9 01		      lda	#%00000001
-     50  f01d		       85 0a		      sta	CTRLPF
-     51  f01f
-     52  f01f							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     53  f01f							;;  VSync
-     54  f01f							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     55  f01f
-     56  f01f				   Frame
-     57  f01f
-     58  f01f		       a2 02		      ldx	#2
-     59  f021		       86 00		      stx	VSYNC
-     60  f023		       86 01		      stx	VBLANK
-     61  f025
-     62  f025		       a2 03		      ldx	#3
-     63  f027				   VerticalSync
-     64  f027		       86 02		      stx	WSYNC
-     65  f029		       ca		      dex
-     66  f02a		       d0 fb		      bne	VerticalSync
-     67  f02c
-     68  f02c		       a2 00		      ldx	#0
-     69  f02e		       86 00		      stx	VSYNC
-     70  f030
-     71  f030							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     72  f030							;;  Set Horizontal Positioning for Player
-     73  f030							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     74  f030
-     75  f030				   HorizontalPosition subroutine
-     76  f030		       a5 80		      lda	P0XPos
-     77  f032		       29 7f		      and	#$7F	; Position must be positive
-     78  f034
-     79  f034		       85 02		      sta	WSYNC
-     80  f036		       85 2b		      sta	HMCLR
-     81  f038
-     82  f038		       38		      sec
-     83  f039				   .DivideLoop		; Get remainder - 3 for fine position
-     84  f039		       e9 0f		      sbc	#15
-     85  f03b		       b0 fc		      bcs	.DivideLoop
-     86  f03d
-     87  f03d		       49 07		      eor	#7
-     88  f03f		       0a		      asl
-     89  f040		       0a		      asl
-     90  f041		       0a		      asl
-     91  f042		       0a		      asl
-     92  f043		       85 20		      sta	HMP0	; set fine position
-     93  f045		       85 10		      sta	RESP0	; reset 15-step brute position
-     94  f047		       85 02		      sta	WSYNC	; wait for scanline
-     95  f049		       85 2a		      sta	HMOVE	; apply find position offset
-     96  f04b
-     97  f04b							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     98  f04b							;;  Remaining 35 VBLANK lines
-     99  f04b							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    100  f04b
-    101  f04b		       a2 23		      ldx	#35
-    102  f04d				   VerticalBlank
-    103  f04d		       86 02		      stx	WSYNC
-    104  f04f		       ca		      dex
-    105  f050		       d0 fb		      bne	VerticalBlank
-    106  f052
-    107  f052		       a2 00		      ldx	#0
-    108  f054		       86 01		      stx	VBLANK
-    109  f056
-    110  f056							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    111  f056							;;  192 Visible Scanlines
-    112  f056							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    113  f056
-    114  f056				   Scanline
-    115  f056		       a9 f0		      lda	#%11110000
-    116  f058		       85 0d		      sta	PF0
-    117  f05a		       a9 fc		      lda	#%11111100
-    118  f05c		       85 0e		      sta	PF1
-    119  f05e		       a9 00		      lda	#%00000000
-    120  f060		       85 0f		      sta	PF2
-    121  f062
-    122  f062		       a2 c0		      ldx	#192
-    123  f064				   .GameLineLoop
-    124  f064		       86 02		      stx	WSYNC
-    125  f066		       ca		      dex
-    126  f067		       d0 fb		      bne	.GameLineLoop
-    127  f069
-    128  f069							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    129  f069							;;  Display Overscan
-    130  f069							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    131  f069
-    132  f069		       a9 02		      lda	#2
-    133  f06b		       85 01		      sta	VBLANK
-    134  f06d		       a2 1e		      ldx	#30
-    135  f06f				   Overscan
-    136  f06f		       86 02		      stx	WSYNC
-    137  f071		       ca		      dex
-    138  f072		       d0 fb		      bne	Overscan
-    139  f074
-    140  f074							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    141  f074							;;  Start new frame
-    142  f074							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    143  f074
-    144  f074		       4c 1f f0 	      jmp	Frame
-    145  f077
-    146  f077							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    147  f077							;;  Finish ROM with 4kb
-    148  f077							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    149  f077
-    150  fffc					      org	$FFFC
-    151  fffc		       00 f0		      .word.w	Start
-    152  fffe		       00 f0		      .word.w	Start
+     41  f00b
+     42  f00b							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     43  f00b							;;  Initialize BG, Field, & Player variables
+     44  f00b							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     45  f00b
+     46  f00b		       a9 0a		      lda	#10
+     47  f00d		       85 81		      sta	P0YPos
+     48  f00f
+     49  f00f		       a9 3c		      lda	#60
+     50  f011		       85 80		      sta	P0XPos
+     51  f013
+     52  f013		       a9 53		      lda	#83
+     53  f015		       85 83		      sta	EnemyYPos
+     54  f017
+     55  f017		       a9 36		      lda	#54
+     56  f019		       85 82		      sta	EnemyXPos
+     57  f01b
+     58  f01b							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     59  f01b							;;  Player sprite & color pointers
+     60  f01b							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     61  f01b
+     62  f01b		       a9 b4		      lda	#<P0Bitmap
+     63  f01d		       85 84		      sta	P0Ptr
+     64  f01f
+     65  f01f		       a9 f0		      lda	#>P0Bitmap
+     66  f021		       85 85		      sta	P0Ptr+1
+     67  f023
+     68  f023		       a9 cf		      lda	#<P0Color
+     69  f025		       85 86		      sta	P0ColorPtr
+     70  f027
+     71  f027		       a9 f0		      lda	#>P0Color
+     72  f029		       85 87		      sta	P0ColorPtr+1
+     73  f02b
+     74  f02b		       a9 c6		      lda	#<BomberBitmap
+     75  f02d		       85 88		      sta	BomberPtr
+     76  f02f
+     77  f02f		       a9 f0		      lda	#>BomberBitmap
+     78  f031		       85 89		      sta	BomberPtr+1
+     79  f033
+     80  f033		       a9 d8		      lda	#<BomberColor
+     81  f035		       85 8a		      sta	BomberColorPtr
+     82  f037
+     83  f037		       a9 f0		      lda	#>BomberColor
+     84  f039		       85 8b		      sta	BomberColorPtr+1
+     85  f03b
+     86  f03b							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     87  f03b							;;  VSync
+     88  f03b							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     89  f03b
+     90  f03b				   Frame
+     91  f03b
+     92  f03b		       a2 02		      ldx	#2
+     93  f03d		       86 00		      stx	VSYNC
+     94  f03f		       86 01		      stx	VBLANK
+     95  f041
+     96  f041		       a2 03		      ldx	#3
+     97  f043				   VerticalSync
+     98  f043		       86 02		      stx	WSYNC
+     99  f045		       ca		      dex
+    100  f046		       d0 fb		      bne	VerticalSync
+    101  f048
+    102  f048		       a2 00		      ldx	#0
+    103  f04a		       86 00		      stx	VSYNC
+    104  f04c
+    105  f04c		       a2 25		      ldx	#37
+    106  f04e				   VerticalBlank
+    107  f04e		       86 02		      stx	WSYNC
+    108  f050		       ca		      dex
+    109  f051		       d0 fb		      bne	VerticalBlank
+    110  f053
+    111  f053		       a2 00		      ldx	#0
+    112  f055		       86 01		      stx	VBLANK
+    113  f057
+    114  f057							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    115  f057							;;  Visible scanlines
+    116  f057							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    117  f057
+    118  f057				   Scanline
+    119  f057		       a9 84		      lda	#$84
+    120  f059		       85 09		      sta	COLUBK
+    121  f05b		       a9 c2		      lda	#$C2
+    122  f05d		       85 08		      sta	COLUPF
+    123  f05f		       a9 01		      lda	#%00000001
+    124  f061		       85 0a		      sta	CTRLPF
+    125  f063		       a9 f0		      lda	#$F0
+    126  f065		       85 0d		      sta	PF0
+    127  f067		       a9 fc		      lda	#$FC
+    128  f069		       85 0e		      sta	PF1
+    129  f06b		       a9 00		      lda	#0
+    130  f06d		       85 0f		      sta	PF2
+    131  f06f
+    132  f06f		       a2 60		      ldx	#96
+    133  f071				   .GameLineLoop
+    134  f071				   .InsideP0
+    135  f071		       8a		      txa
+    136  f072		       38		      sec
+    137  f073		       e5 81		      sbc	P0YPos
+    138  f075		       c5 09		      cmp	P0_HEIGHT
+    139  f077		       90 02		      bcc	.DrawP0Sprite
+    140  f079		       a9 00		      lda	#0
+    141  f07b
+    142  f07b				   .DrawP0Sprite
+    143  f07b		       a8		      tay
+    144  f07c		       b1 84		      lda	(P0Ptr),Y
+    145  f07e		       85 02		      sta	WSYNC
+    146  f080		       85 1b		      sta	GRP0
+    147  f082		       b1 86		      lda	(P0ColorPtr),Y
+    148  f084		       85 06		      sta	COLUP0
+    149  f086
+    150  f086				   .InsideBomber
+    151  f086		       8a		      txa
+    152  f087		       38		      sec
+    153  f088		       e5 83		      sbc	EnemyYPos
+    154  f08a		       c5 09		      cmp	P0_HEIGHT
+    155  f08c		       90 02		      bcc	.DrawP1Sprite
+    156  f08e		       a9 00		      lda	#0
+    157  f090
+    158  f090				   .DrawP1Sprite
+    159  f090		       a8		      tay
+    160  f091		       a9 05		      lda	#%0000101
+    161  f093		       85 05		      sta	NUSIZ1	; stretch player1 sprite
+    162  f095		       b1 88		      lda	(BomberPtr),Y
+    163  f097		       85 02		      sta	WSYNC
+    164  f099		       85 1c		      sta	GRP1
+    165  f09b		       b1 8a		      lda	(BomberColorPtr),Y
+    166  f09d		       85 07		      sta	COLUP1
+    167  f09f
+    168  f09f		       ca		      dex
+    169  f0a0		       d0 cf		      bne	.GameLineLoop
+    170  f0a2
+    171  f0a2							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    172  f0a2							;;  Overscan
+    173  f0a2							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    174  f0a2
+    175  f0a2		       a2 02		      ldx	#2
+    176  f0a4		       86 01		      stx	VBLANK
+    177  f0a6
+    178  f0a6		       a2 1e		      ldx	#30
+    179  f0a8				   Overscan
+    180  f0a8		       86 02		      stx	WSYNC
+    181  f0aa		       ca		      dex
+    182  f0ab		       d0 fb		      bne	Overscan
+    183  f0ad
+    184  f0ad		       a2 00		      ldx	#0
+    185  f0af		       86 01		      stx	VBLANK
+    186  f0b1
+    187  f0b1							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    188  f0b1							;;  Start new frame
+    189  f0b1							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    190  f0b1
+    191  f0b1		       4c 3b f0 	      jmp	Frame
+    192  f0b4
+    193  f0b4							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    194  f0b4							;;  Graphics Data
+    195  f0b4							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    196  f0b4
+    197  f0b4				   P0Bitmap
+    198  f0b4		       00		      .byte.b	#%00000000	;Clear byte
+    199  f0b5		       10		      .byte.b	#%00010000	;$0E
+    200  f0b6		       fe		      .byte.b	#%11111110	;$0E
+    201  f0b7		       7c		      .byte.b	#%01111100	;$0E
+    202  f0b8		       38		      .byte.b	#%00111000	;$82
+    203  f0b9		       38		      .byte.b	#%00111000	;$82
+    204  f0ba		       10		      .byte.b	#%00010000	;$0E
+    205  f0bb		       10		      .byte.b	#%00010000	;$0E
+    206  f0bc		       10		      .byte.b	#%00010000	;$40
+    207  f0bd
+    208  f0bd				   P0TurnBitmap
+    209  f0bd		       00		      .byte.b	#%00000000	;Clear byte
+    210  f0be		       10		      .byte.b	#%00010000	;$0E
+    211  f0bf		       7c		      .byte.b	#%01111100	;$0E
+    212  f0c0		       38		      .byte.b	#%00111000	;$0E
+    213  f0c1		       38		      .byte.b	#%00111000	;$82
+    214  f0c2		       38		      .byte.b	#%00111000	;$82
+    215  f0c3		       10		      .byte.b	#%00010000	;$0E
+    216  f0c4		       10		      .byte.b	#%00010000	;$0E
+    217  f0c5		       10		      .byte.b	#%00010000	;$40
+    218  f0c6
+    219  f0c6				   BomberBitmap
+    220  f0c6		       00		      .byte.b	#%00000000	;Clear byte
+    221  f0c7		       54		      .byte.b	#%01010100	;$0E
+    222  f0c8		       54		      .byte.b	#%01010100	;$30
+    223  f0c9		       fe		      .byte.b	#%11111110	;$30
+    224  f0ca		       fe		      .byte.b	#%11111110	;$30
+    225  f0cb		       38		      .byte.b	#%00111000	;$30
+    226  f0cc		       38		      .byte.b	#%00111000	;$30
+    227  f0cd		       10		      .byte.b	#%00010000	;$30
+    228  f0ce		       10		      .byte.b	#%00010000	;$40
+    229  f0cf
+    230  f0cf							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    231  f0cf							;;  Color Data
+    232  f0cf							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    233  f0cf
+    234  f0cf				   P0Color
+    235  f0cf		       00		      .byte.b	#$00
+    236  f0d0		       0e		      .byte.b	#$0E
+    237  f0d1		       0e		      .byte.b	#$0E
+    238  f0d2		       0e		      .byte.b	#$0E
+    239  f0d3		       82		      .byte.b	#$82
+    240  f0d4		       82		      .byte.b	#$82
+    241  f0d5		       0e		      .byte.b	#$0E
+    242  f0d6		       0e		      .byte.b	#$0E
+    243  f0d7		       40		      .byte.b	#$40
+    244  f0d8
+    245  f0d8				   BomberColor
+    246  f0d8		       00		      .byte.b	#$00
+    247  f0d9		       0e		      .byte.b	#$0E
+    248  f0da		       30		      .byte.b	#$30
+    249  f0db		       30		      .byte.b	#$30
+    250  f0dc		       30		      .byte.b	#$30
+    251  f0dd		       30		      .byte.b	#$30
+    252  f0de		       30		      .byte.b	#$30
+    253  f0df		       30		      .byte.b	#$30
+    254  f0e0		       40		      .byte.b	#$40
+    255  f0e1
+    256  f0e1							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    257  f0e1							;;  Finish ROM with 4kb
+    258  f0e1							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    259  f0e1
+    260  fffc					      org	$FFFC
+    261  fffc		       00 f0		      .word.w	Start
+    262  fffe		       00 f0		      .word.w	Start

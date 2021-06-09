@@ -1,17 +1,24 @@
 --- Symbol List (sorted by symbol)
+0.DrawP0Sprite           f07b              (R )
+0.DrawP1Sprite           f090              (R )
 0.FREE_BYTES             0000                  
+0.GameLineLoop           f071              (R )
+0.InsideBomber           f086                  
+0.InsideP0               f071                  
 1.CLEAR_STACK            f006              (R )
-2.DivideLoop             f039              (R )
-2.GameLineLoop           f064              (R )
 AUDC0                    0015                  
 AUDC1                    0016                  
 AUDF0                    0017                  
 AUDF1                    0018                  
 AUDV0                    0019                  
 AUDV1                    001a                  
+BomberBitmap             f0c6              (R )
+BomberColor              f0d8              (R )
+BomberColorPtr           008a              (R )
+BomberPtr                0088              (R )
 COLUBK                   0009              (R )
-COLUP0                   0006                  
-COLUP1                   0007                  
+COLUP0                   0006              (R )
+COLUP1                   0007              (R )
 COLUPF                   0008              (R )
 CTRLPF                   000a              (R )
 CXBLPF                   0006                  
@@ -26,19 +33,18 @@ CXPPMM                   0007
 ENABL                    001f                  
 ENAM0                    001d                  
 ENAM1                    001e                  
-EnemyXPos                0082                  
-EnemyYPos                0083                  
-Frame                    f01f              (R )
-GRP0                     001b                  
-GRP1                     001c                  
+EnemyXPos                0082              (R )
+EnemyYPos                0083              (R )
+Frame                    f03b              (R )
+GRP0                     001b              (R )
+GRP1                     001c              (R )
 HMBL                     0024                  
-HMCLR                    002b              (R )
+HMCLR                    002b                  
 HMM0                     0022                  
 HMM1                     0023                  
-HMOVE                    002a              (R )
-HMP0                     0020              (R )
+HMOVE                    002a                  
+HMP0                     0020                  
 HMP1                     0021                  
-HorizontalPosition       f030                  
 INPT0                    0008                  
 INPT1                    0009                  
 INPT2                    000a                  
@@ -47,8 +53,14 @@ INPT4                    000c
 INPT5                    000d                  
 INTIM                    0284                  
 NUSIZ0                   0004                  
-NUSIZ1                   0005                  
-Overscan                 f06f              (R )
+NUSIZ1                   0005              (R )
+Overscan                 f0a8              (R )
+P0_HEIGHT                0009              (R )
+P0Bitmap                 f0b4              (R )
+P0Color                  f0cf              (R )
+P0ColorPtr               0086              (R )
+P0Ptr                    0084              (R )
+P0TurnBitmap             f0bd                  
 P0XPos                   0080              (R )
 P0YPos                   0081              (R )
 PF0                      000d              (R )
@@ -61,10 +73,10 @@ RESM0                    0012
 RESM1                    0013                  
 RESMP0                   0028                  
 RESMP1                   0029                  
-RESP0                    0010              (R )
+RESP0                    0010                  
 RESP1                    0011                  
 RSYNC                    0003                  
-Scanline                 f056                  
+Scanline                 f057                  
 Start                    f000              (R )
 SWACNT                   0281                  
 SWBCNT                   0283                  
@@ -84,8 +96,8 @@ VDELP0                   0025
 VDELP1                   0026                  
 VERSION_MACRO            006a                  
 VERSION_VCS              0069                  
-VerticalBlank            f04d              (R )
-VerticalSync             f027              (R )
+VerticalBlank            f04e              (R )
+VerticalSync             f043              (R )
 VSYNC                    0000              (R )
 WSYNC                    0002              (R )
 --- End of Symbol List.
